@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Hide AI Slop",
+  "description": "Extension to hide AI Slop",
+  "version": "1.0",
+  "icons": {
+    "48": "icons/48x-hide-ai-slop-extension.png",
+    "128": "icons/128x-hide-ai-slop-extension.png"
+  },
+  "background": {
+    "service_worker": "src/hide-ai-slop-extension-background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.youtube.com/*"],
+      "js": ["src/hide-ai-slop-extension.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "permissions": ["storage"],
+  "action": {
+    "default_popup": "src/hide-ai-slop-extension.html",
+    "default_icon": "icons/hide-ai-slop-extension.png"
+  }
+}
