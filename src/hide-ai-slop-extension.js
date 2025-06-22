@@ -18,6 +18,7 @@ class SlopHiderUtils {
 class SlopHider {
     constructor() {
         this.slopId = '#expandable-metadata'
+        this.website = 'youtube'
         this.slopHiderUtils = new SlopHiderUtils()
     }
 
@@ -26,10 +27,19 @@ class SlopHider {
         slop.remove()
     }
 
+    prepareSlopRemovalMessage() {
+        return {
+            type: 'hideAiSlop',
+            removals: 1,
+            website: this.website
+        }
+    }
+
     async startObserving() {
         console.log('Started listening for slop to hide')
         const slop = await this.slopHiderUtils.waitForElement(this.slopId)
         this.removeSlop(slop)
+        chrome.runtime.sendMessage(this.prepareSlopRemovalMessage())
         return new Promise((resolve) => {
             resolve(this.startObserving())
         })

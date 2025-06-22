@@ -10,8 +10,8 @@ class AISlopRemovalsStorage {
     }
 
     async setSlopRemovals(website, removals) {
-        console.debug(`Points for ${website} set to ${removals}`)
-        return await chrome.storage.sync.set({[channelName]: removals})
+        console.debug(`Slop removals for ${website} set to ${removals}`)
+        return await chrome.storage.sync.set({[website]: removals})
     }
 }
 
@@ -19,11 +19,11 @@ aiSlopRemovalsStorage = new AISlopRemovalsStorage()
 
 const onContentScriptMessage = async (message, sender) => {
     if (sender.id === chrome.runtime.id) {
-        if (message.type === 'aiSlop') {
-            const channelName = message.channelName
+        if (message.type === 'hideAiSlop') {
+            const website = message.website
             const points = message.removals
-            const existingPoints = await aiSlopRemovalsStorage.getPoints(channelName)
-            await aiSlopRemovalsStorage.setPoints(channelName, existingPoints + points)
+            const existingPoints = await aiSlopRemovalsStorage.getSlopRemovals(website)
+            await aiSlopRemovalsStorage.setSlopRemovals(website, existingPoints + points)
         }
     }
 }
