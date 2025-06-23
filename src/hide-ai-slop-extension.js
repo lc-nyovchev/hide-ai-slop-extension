@@ -35,14 +35,21 @@ class SlopHider {
         }
     }
 
+    hasContent(slop) {
+        return slop && slop.innerHTML && slop.innerHTML.trim() !== ""
+    }
+
     async startObserving() {
-        console.log('Started listening for slop to hide')
         const slop = await this.slopHiderUtils.waitForElement(this.slopId)
-        this.removeSlop(slop)
-        chrome.runtime.sendMessage(this.prepareSlopRemovalMessage())
+        if (this.hasContent(slop)) {
+            this.removeSlop(slop)
+            chrome.runtime.sendMessage(this.prepareSlopRemovalMessage())
+        }
         return new Promise((resolve) => {
-            resolve(this.startObserving())
-        })
+            setTimeout(() => {
+                resolve(this.startObserving())
+            }, 500)
+        });
     }
 }
 
