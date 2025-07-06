@@ -12,8 +12,25 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://*.youtube.com/*"],
+      "matches": [
+        "https://*.youtube.com/*",
+        "https://*.google.com/*",
+        "https://*.google.co.uk/*",
+        "https://*.google.ca/*",
+        "https://*.google.de/*",
+        "https://*.google.fr/*",
+        "https://*.google.nl/*"
+      ],
       "js": ["src/hide-ai-slop-extension.js"],
+      "host_permissions": [
+        "https://*.youtube.com/*",
+        "https://*.google.com/*",
+        "https://*.google.co.uk/*",
+        "https://*.google.ca/*",
+        "https://*.google.de/*",
+        "https://*.google.fr/*",
+        "https://*.google.nl/*"
+      ],
       "run_at": "document_end"
     }
   ],

@@ -15,10 +15,20 @@ class SlopHiderUtils {
     }
 }
 
-class SlopHider {
+class WebsiteSelectorMap {
     constructor() {
-        this.slopId = '#expandable-metadata'
-        this.website = 'youtube'
+        this.map = {
+            youtube: '#expandable-metadata',
+            google: 'div[data-mcpr]'
+        }
+    }
+}
+
+class SlopHider {
+    constructor(website) {
+        this.websiteSelectorMap = new WebsiteSelectorMap()
+        this.website = website
+        this.slopSelector = this.websiteSelectorMap.map[website]
         this.slopHiderUtils = new SlopHiderUtils()
     }
 
@@ -40,7 +50,7 @@ class SlopHider {
     }
 
     async startObserving() {
-        const slop = await this.slopHiderUtils.waitForElement(this.slopId)
+        const slop = await this.slopHiderUtils.waitForElement(this.slopSelector)
         if (this.hasContent(slop)) {
             this.removeSlop(slop)
             chrome.runtime.sendMessage(this.prepareSlopRemovalMessage())
@@ -53,5 +63,20 @@ class SlopHider {
     }
 }
 
-const slopHider = new SlopHider()
-slopHider.startObserving();
+const getSlopHider = () => {
+    const host = window.location.hostname
+    const isYouTube = /(^|\.)youtube\.com$/.test(host) || host === 'm.youtube.com'
+    const isGoogle = /\.google\./.test(host)
+    if (isYouTube) {
+        return new SlopHider('youtube')
+    } else if (isGoogle) {
+        return new SlopHider('google')
+    } else {
+        return null
+    }
+}
+
+const slopHider = getSlopHider()
+if (slopHider) {
+    slopHider.startObserving();
+}
