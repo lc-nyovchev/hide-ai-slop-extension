@@ -3,7 +3,11 @@ A `manifest v3` Chrome/Chromium extension for automatically hiding AI generated 
 
 <img width="640" height="400" alt="hide-slop" src="https://github.com/user-attachments/assets/cf7b46b1-6a1c-409e-89a4-3c047be7748b" />
 
-
+# De-slops
+- google search summaries
+- gmail summaries
+- youtube summaries
+- more to come (feel free to open issue if you want something supported)
 
 # Installation
 
