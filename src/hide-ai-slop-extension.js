@@ -29,6 +29,10 @@ class WebsiteSelectorMap {
 				if (geminiLink && geminiLink.parentElement && geminiLink.parentElement.parentElement && geminiLink.parentElement.parentElement.parentElement) {
 					return geminiLink.parentElement.parentElement.parentElement
 				}
+				const tryGeminiButton = document.querySelectorAll('span[data-is-tooltip-wrapper]')[0]
+				if (tryGeminiButton && tryGeminiButton.parentElement) {
+					return tryGeminiButton.parentElement
+				}
 			}
 		}
 	}
