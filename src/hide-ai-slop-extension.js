@@ -19,21 +19,35 @@ class WebsiteSelectorMap {
 	constructor() {
 		this.map = {
 			youtube: () => {
-				return document.querySelector('#expandable-metadata')
+				const youtubeSummary = this.getNThParent(document.querySelector('#expandable-metadata #header[skip-key-interaction] #collapsed-label > yt-formatted-string'), 4)
+				if (youtubeSummary) {
+					return youtubeSummary
+				}
 			},
 			google: () => {
 				return document.querySelector('div[data-mcpr]')
 			},
 			gmail: () => {
-				const geminiLink = document.querySelector('a[href^="https://support.google.com/mail?p=gemini-summary-card"]')
-				if (geminiLink && geminiLink.parentElement && geminiLink.parentElement.parentElement && geminiLink.parentElement.parentElement.parentElement) {
-					return geminiLink.parentElement.parentElement.parentElement
+				const geminiLink = this.getNThParent(document.querySelector('a[href^="https://support.google.com/mail?p=gemini-summary-card"]'), 3)
+				if (geminiLink) {
+					return geminiLink
 				}
-				const tryGeminiButton = document.querySelectorAll('span[data-is-tooltip-wrapper]')[0]
-				if (tryGeminiButton && tryGeminiButton.parentElement) {
-					return tryGeminiButton.parentElement
+				const tryGeminiButton = this.getNThParent(document.querySelector('span[data-is-tooltip-wrapper] button[aria-label*="Gemini"]'), 3)
+				if (tryGeminiButton) {
+					return tryGeminiButton
 				}
 			}
+		}
+	}
+	getNThParent(element, n) {
+		if (!element) {
+			return null
+		} else if (n === 0) {
+			return element
+		} else if (element.parentElement) {
+			return this.getNThParent(element.parentElement, n - 1)
+		} else {
+			return null
 		}
 	}
 }
