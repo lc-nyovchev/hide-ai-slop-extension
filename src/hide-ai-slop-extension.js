@@ -23,6 +23,10 @@ class WebsiteSelectorMap {
 				if (youtubeSummary) {
 					return youtubeSummary
 				}
+				const youtubeSummaryInDescription = document.querySelector('#description #video-summary')
+				if (youtubeSummaryInDescription) {
+					return youtubeSummaryInDescription
+				}
 			},
 			google: () => {
 				return document.querySelector('div[data-mcpr]')
