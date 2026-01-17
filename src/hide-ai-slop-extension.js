@@ -81,11 +81,22 @@ class SlopHider {
 		return slop && slop.innerHTML && slop.innerHTML.trim() !== ''
 	}
 
+	async isEnabled() {
+		const store = await chrome.storage.sync.get()
+		if (typeof store['HIDE_AI_SLOP_BLOCKING_ENABLED'] === 'undefined') {
+			return true
+ 		} else {
+			return store['HIDE_AI_SLOP_BLOCKING_ENABLED']
+		}
+	}
+
 	async startObserving() {
-		const slop = await this.slopHiderUtils.waitForElement(this.slopSelectorFunc)
-		if (this.hasContent(slop)) {
-			this.removeSlop(slop)
-			chrome.runtime.sendMessage(this.prepareSlopRemovalMessage())
+		if (await this.isEnabled()) {
+			const slop = await this.slopHiderUtils.waitForElement(this.slopSelectorFunc)
+			if (this.hasContent(slop)) {
+				this.removeSlop(slop)
+				chrome.runtime.sendMessage(this.prepareSlopRemovalMessage())
+			}
 		}
 		return new Promise((resolve) => {
 			setTimeout(() => {

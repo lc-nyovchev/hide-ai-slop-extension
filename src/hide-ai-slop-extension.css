@@ -1,9 +1,11 @@
-.light, .light * {
+.light,
+.light * {
     color: #000;
     background-color: #fff;
 }
 
-.dark, .dark * {
+.dark,
+.dark * {
     color: #fff;
     background-color: #000;
 }
@@ -11,10 +13,25 @@
 .clear-button {
     cursor: pointer;
     display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.controls-container {
+    display: flex;
+    gap: 10px;
+    width: 100%;
 }
 
 .color-switcher {
-    margin-bottom: 10px;
+    flex: 0 0 50%;
+    justify-content: right;
+}
+
+.toggle-enabled-button {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .container {
@@ -24,7 +41,6 @@
     align-items: center;
     justify-content: center;
     min-width: 280px;
-    height: 100%;
 }
 
 table {
@@ -37,7 +53,7 @@ th {
     text-align: inherit;
 }
 
-tr > td:last-of-type {
+tr>td:last-of-type {
     text-align: center;
 }
 

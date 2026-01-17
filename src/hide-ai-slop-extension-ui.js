@@ -1,4 +1,4 @@
-const { h1, h3, table, div, tr, td, th, text, i } = van.tags
+const { h1, h3, table, div, tr, td, th, span, text, i } = van.tags
 
 const CONSTANTS = {
 	COLOR_PALETTES: {
@@ -7,7 +7,11 @@ const CONSTANTS = {
 		DEFAULT: 'dark'
 	},
 	COLOR_PALETTES_THEME_STORE_KEY: 'HIDE_AI_SLOP_THEME',
-	HEADER_CONSTANT: 'HIDE_AI_SLOP_EXTENSION_HEADER'
+	HEADER_CONSTANT: 'HIDE_AI_SLOP_EXTENSION_HEADER',
+	SLOP_BLOCKING_ENABLED: {
+		KEY: 'HIDE_AI_SLOP_BLOCKING_ENABLED',
+		DEFAULT_VALUE: true
+	}
 }
 
 const ThemeUtils = {
@@ -15,24 +19,45 @@ const ThemeUtils = {
 		if (theme !== CONSTANTS.COLOR_PALETTES.DARK && theme !== CONSTANTS.COLOR_PALETTES.LIGHT) {
 			console.error(`Supported themes are only ${CONSTANTS.COLOR_PALETTES.DARK} and ${CONSTANTS.COLOR_PALETTES.LIGHT}`)
 		}
-		return await chrome.storage.sync.set({[CONSTANTS.COLOR_PALETTES_THEME_STORE_KEY]: theme})
+		return await chrome.storage.sync.set({ [CONSTANTS.COLOR_PALETTES_THEME_STORE_KEY]: theme })
 	},
 	async getTheme() {
 		const store = await chrome.storage.sync.get()
 		const currentTheme = store[CONSTANTS.COLOR_PALETTES_THEME_STORE_KEY]
-		if ((currentTheme !== CONSTANTS.COLOR_PALETTES.DARK && currentTheme !== CONSTANTS.COLOR_PALETTES.LIGHT)) {
+		if (currentTheme !== CONSTANTS.COLOR_PALETTES.DARK && currentTheme !== CONSTANTS.COLOR_PALETTES.LIGHT) {
 			return CONSTANTS.COLOR_PALETTES.DEFAULT
 		} else {
 			return currentTheme
 		}
+	},
+	async setSlopBlockingEnabled(enabled) {
+		await chrome.storage.sync.set({ [CONSTANTS.SLOP_BLOCKING_ENABLED.KEY]: enabled })
+		chrome.runtime.sendMessage({
+			type: 'hideAiSlopToggleEnabled',
+			enabled: enabled
+		})
+	},
+	async isSlopBlockingEnabled() {
+		const store = await chrome.storage.sync.get()
+		const isEnabled = store[CONSTANTS.SLOP_BLOCKING_ENABLED.KEY]
+		if (typeof isEnabled === 'undefined') {
+			return CONSTANTS.SLOP_BLOCKING_ENABLED.DEFAULT_VALUE
+		}
+		return isEnabled
 	}
 }
 
 class InterfaceElementsBuilder {
-	constructor(colorPalette = CONSTANTS.COLOR_PALETTES.DEFAULT, removals = {}, refreshInterval = 5000) {
+	constructor(
+		enabled = CONSTANTS.SLOP_BLOCKING_ENABLED.DEFAULT_VALUE,
+		colorPalette = CONSTANTS.COLOR_PALETTES.DEFAULT,
+		removals = {},
+		refreshInterval = 5000
+	) {
 		this.refreshInterval = refreshInterval
 		this.state = vanX.reactive({
-			removals: Object.assign(removals, {[CONSTANTS.HEADER_CONSTANT]: 420}),
+			enabled: enabled,
+			removals: Object.assign(removals, { [CONSTANTS.HEADER_CONSTANT]: 420 }),
 			colorPalette: colorPalette
 		})
 	}
@@ -54,17 +79,19 @@ class InterfaceElementsBuilder {
 
 	createContainer() {
 		return div(
-			{class: () => `container ${this.state.colorPalette}`},
-			this.createHeader(),
+			{
+				class: () => `container ${this.state.colorPalette}`
+			},
+			this.createHeader(this.state),
+			this.createControls(this.state),
 			this.createDedication(),
-			this.createColorPaletteSwitcher(this.state),
 			this.createTable(this.state.removals)
 		)
 	}
 
 	createTableHeader() {
 		return tr(
-			th('Website'),
+			th('Website'), 
 			th('Slops Removed'),
 			th('Delete')
 		)
@@ -72,9 +99,40 @@ class InterfaceElementsBuilder {
 
 	createTable(removals) {
 		return vanX.list(
-			() => table({class: 'removals-values'}),
+			() => table({ class: 'removals-values' }),
 			removals,
 			(score, deleter, website) => this.createTableRow(score, deleter, website)
+		)
+	}
+
+	createToggleEnabledButton(state) {
+		return div(
+			{
+				class: 'clear-button toggle-enabled-button',
+				onclick: async () => {
+					await ThemeUtils.setSlopBlockingEnabled(!state.enabled)
+					state.enabled = !state.enabled
+				},
+			},
+			i({
+				class: () => {
+					if (state.enabled) {
+						return 'fa-solid fa-toggle-on fa-lg'
+					} else {
+						return 'fa-solid fa-toggle-off fa-lg'
+					}
+				},
+				title: () => {
+					if (state.enabled) {
+						return 'Disable hiding slop'
+					} else {
+						return 'Enable hiding slop'
+					}
+				}
+			}),
+			div(
+				() => { return state.enabled ? 'On' : 'Off'}
+			)
 		)
 	}
 
@@ -82,18 +140,22 @@ class InterfaceElementsBuilder {
 		if (website === CONSTANTS.HEADER_CONSTANT) {
 			return this.createTableHeader()
 		}
+		if (website === CONSTANTS.SLOP_BLOCKING_ENABLED.KEY) {
+			return null
+		}
 		return tr(
 			td(website),
 			td(score),
 			td(
-				div({
+				div(
+					{
 						class: 'clear-button',
 						onclick: async () => {
 							await chrome.storage.sync.remove(website)
 							deleter()
 						}
 					},
-					i({class: 'fa-solid fa-trash fa-xs', title: 'Delete'})
+					i({ class: 'fa-solid fa-trash fa-xs', title: 'Delete' })
 				)
 			)
 		)
@@ -118,11 +180,19 @@ class InterfaceElementsBuilder {
 						return 'fa-regular fa-moon fa-lg'
 					}
 				}
-			}),
+			})
 		)
 	}
 
-	createHeader() {
+	createControls(state) {
+		return div(
+			{ class: 'controls-container' }, 
+			this.createColorPaletteSwitcher(state), 
+			this.createToggleEnabledButton(state)
+		)
+	}
+
+	createHeader(state) {
 		return h1('Hide AI Slop')
 	}
 
@@ -131,8 +201,11 @@ class InterfaceElementsBuilder {
 	}
 }
 
-ThemeUtils.getTheme().then((theme) => {
-	const interfaceElementsBuilder = new InterfaceElementsBuilder(theme)
+Promise.all([
+	ThemeUtils.isSlopBlockingEnabled(), 
+	ThemeUtils.getTheme()
+]).then(([enabled, theme]) => {
+	const interfaceElementsBuilder = new InterfaceElementsBuilder(enabled, theme)
 	interfaceElementsBuilder.checkForChanges().then(() => {
 		van.add(document.body, interfaceElementsBuilder.createContainer())
 	})
