@@ -1,104 +1,128 @@
-{
-	let e, t, r, o, n, l, s, i, f, h, w, a, d, u, _, c, S, g, y, b, m, v, j, x, O
-	;(s = Object.getPrototypeOf),
-		(f = {}),
-		(h = s((i = { isConnected: 1 }))),
-		(w = s(s)),
-		(a = (e, t, r, o) => (e ?? (setTimeout(r, o), new Set())).add(t)),
-		(d = (e, t, o) => {
-			let n = r
-			r = t
-			try {
-				return e(o)
-			} catch (e) {
-				return console.error(e), o
-			} finally {
-				r = n
-			}
-		}),
-		(u = (e) => e.filter((e) => e.t?.isConnected)),
-		(_ = (e) =>
-			(n = a(
-				n,
-				e,
-				() => {
-					for (let e of n) (e.o = u(e.o)), (e.l = u(e.l))
-					n = l
-				},
-				1e3
-			))),
-		(c = {
-			get val() {
-				return r?.i?.add(this), this.rawVal
-			},
-			get oldVal() {
-				return r?.i?.add(this), this.h
-			},
-			set val(o) {
-				r?.u?.add(this), o !== this.rawVal && ((this.rawVal = o), this.o.length + this.l.length ? (t?.add(this), (e = a(e, this, x))) : (this.h = o))
-			}
-		}),
-		(S = (e) => ({ __proto__: c, rawVal: e, h: e, o: [], l: [] })),
-		(g = (e, t) => {
-			let r = { i: new Set(), u: new Set() },
-				n = { f: e },
-				l = o
-			o = []
-			let s = d(e, r, t)
-			s = (s ?? document).nodeType ? s : new Text(s)
-			for (let e of r.i) r.u.has(e) || (_(e), e.o.push(n))
-			for (let e of o) e.t = s
-			return (o = l), (n.t = s)
-		}),
-		(y = (e, t = S(), r) => {
-			let n = { i: new Set(), u: new Set() },
-				l = { f: e, s: t }
-			;(l.t = r ?? o?.push(l) ?? i), (t.val = d(e, n, t.rawVal))
-			for (let e of n.i) n.u.has(e) || (_(e), e.l.push(l))
-			return t
-		}),
-		(b = (e, ...t) => {
-			for (let r of t.flat(1 / 0)) {
-				let t = s(r ?? 0),
-					o = t === c ? g(() => r.val) : t === w ? g(r) : r
-				o != l && e.append(o)
-			}
-			return e
-		}),
-		(m = (e, t, ...r) => {
-			let [{ is: o, ...n }, ...i] = s(r[0] ?? 0) === h ? r : [{}, ...r],
-				a = e ? document.createElementNS(e, t, { is: o }) : document.createElement(t, { is: o })
-			for (let [e, r] of Object.entries(n)) {
-				let o = (t) => (t ? Object.getOwnPropertyDescriptor(t, e) ?? o(s(t)) : l),
-					n = t + ',' + e,
-					i = (f[n] ??= o(s(a))?.set ?? 0),
-					h = e.startsWith('on')
-						? (t, r) => {
-								let o = e.slice(2)
-								a.removeEventListener(o, r), a.addEventListener(o, t)
-						  }
-						: i
-						? i.bind(a)
-						: a.setAttribute.bind(a, e),
-					d = s(r ?? 0)
-				e.startsWith('on') || (d === w && ((r = y(r)), (d = c))), d === c ? g(() => (h(r.val, r.h), a)) : h(r)
-			}
-			return b(a, i)
-		}),
-		(v = (e) => ({ get: (t, r) => m.bind(l, e, r) })),
-		(j = (e, t) => (t ? t !== e && e.replaceWith(t) : e.remove())),
-		(x = () => {
-			let r = 0,
-				o = [...e].filter((e) => e.rawVal !== e.h)
-			do {
-				t = new Set()
-				for (let e of new Set(o.flatMap((e) => (e.l = u(e.l))))) y(e.f, e.s, e.t), (e.t = l)
-			} while (++r < 100 && (o = [...t]).length)
-			let n = [...e].filter((e) => e.rawVal !== e.h)
-			e = l
-			for (let e of new Set(n.flatMap((e) => (e.o = u(e.o))))) j(e.t, g(e.f, e.t)), (e.t = l)
-			for (let e of n) e.h = e.rawVal
-		}),
-		(O = { tags: new Proxy((e) => new Proxy(m, v(e)), v()), hydrate: (e, t) => j(e, g(t, e)), add: b, state: S, derive: y }),
-		(window.van = O)
-}
+(() => {
+    // van.js
+    var protoOf = Object.getPrototypeOf;
+    var changedStates;
+    var derivedStates;
+    var curDeps;
+    var curNewDerives;
+    var alwaysConnectedDom = { isConnected: 1 };
+    var gcCycleInMs = 1e3;
+    var statesToGc;
+    var propSetterCache = {};
+    var objProto = protoOf(alwaysConnectedDom);
+    var funcProto = protoOf(protoOf);
+    var _undefined;
+    var addAndScheduleOnFirst = (set, s, f, waitMs) => (set ?? (waitMs ? setTimeout(f, waitMs) : queueMicrotask(f), /* @__PURE__ */ new Set())).add(s);
+    var runAndCaptureDeps = (f, deps, arg) => {
+        let prevDeps = curDeps;
+        curDeps = deps;
+        try {
+            return f(arg);
+        } catch (e) {
+            console.error(e);
+            return arg;
+        } finally {
+            curDeps = prevDeps;
+        }
+    };
+    var keepConnected = (l) => l.filter((b) => b._dom?.isConnected);
+    var addStatesToGc = (d) => statesToGc = addAndScheduleOnFirst(statesToGc, d, () => {
+        for (let s of statesToGc)
+            s._bindings = keepConnected(s._bindings), s._listeners = keepConnected(s._listeners);
+        statesToGc = _undefined;
+    }, gcCycleInMs);
+    var stateProto = {
+        get val() {
+            curDeps?._getters?.add(this);
+            return this.rawVal;
+        },
+        get oldVal() {
+            curDeps?._getters?.add(this);
+            return this._oldVal;
+        },
+        set val(v) {
+            curDeps?._setters?.add(this);
+            if (v !== this.rawVal) {
+                this.rawVal = v;
+                this._bindings.length + this._listeners.length ? (derivedStates?.add(this), changedStates = addAndScheduleOnFirst(changedStates, this, updateDoms)) : this._oldVal = v;
+            }
+        }
+    };
+    var state = (initVal) => ({
+        __proto__: stateProto,
+        rawVal: initVal,
+        _oldVal: initVal,
+        _bindings: [],
+        _listeners: []
+    });
+    var bind = (f, dom) => {
+        let deps = { _getters: /* @__PURE__ */ new Set(), _setters: /* @__PURE__ */ new Set() }, binding = { f }, prevNewDerives = curNewDerives;
+        curNewDerives = [];
+        let newDom = runAndCaptureDeps(f, deps, dom);
+        newDom = (newDom ?? document).nodeType ? newDom : new Text(newDom);
+        for (let d of deps._getters)
+            deps._setters.has(d) || (addStatesToGc(d), d._bindings.push(binding));
+        for (let l of curNewDerives) l._dom = newDom;
+        curNewDerives = prevNewDerives;
+        return binding._dom = newDom;
+    };
+    var derive = (f, s = state(), dom) => {
+        let deps = { _getters: /* @__PURE__ */ new Set(), _setters: /* @__PURE__ */ new Set() }, listener = { f, s };
+        listener._dom = dom ?? curNewDerives?.push(listener) ?? alwaysConnectedDom;
+        s.val = runAndCaptureDeps(f, deps, s.rawVal);
+        for (let d of deps._getters)
+            deps._setters.has(d) || (addStatesToGc(d), d._listeners.push(listener));
+        return s;
+    };
+    var add = (dom, ...children) => {
+        for (let c of children.flat(Infinity)) {
+            let protoOfC = protoOf(c ?? 0);
+            let child = protoOfC === stateProto ? bind(() => c.val) : protoOfC === funcProto ? bind(c) : c;
+            child != _undefined && dom.append(child);
+        }
+        return dom;
+    };
+    var tag = (ns, name, ...args) => {
+        let [{ is, ...props }, ...children] = protoOf(args[0] ?? 0) === objProto ? args : [{}, ...args];
+        let dom = ns ? document.createElementNS(ns, name, { is }) : document.createElement(name, { is });
+        for (let [k, v] of Object.entries(props)) {
+            let getPropDescriptor = (proto) => proto ? Object.getOwnPropertyDescriptor(proto, k) ?? getPropDescriptor(protoOf(proto)) : _undefined;
+            let cacheKey = name + "," + k;
+            let propSetter = propSetterCache[cacheKey] ??= getPropDescriptor(protoOf(dom))?.set ?? 0;
+            let setter = k.startsWith("on") ? (v2, oldV) => {
+                let event = k.slice(2);
+                dom.removeEventListener(event, oldV);
+                dom.addEventListener(event, v2);
+            } : propSetter ? propSetter.bind(dom) : dom.setAttribute.bind(dom, k);
+            let protoOfV = protoOf(v ?? 0);
+            k.startsWith("on") || protoOfV === funcProto && (v = derive(v), protoOfV = stateProto);
+            protoOfV === stateProto ? bind(() => (setter(v.val, v._oldVal), dom)) : setter(v);
+        }
+        return add(dom, children);
+    };
+    var handler = (ns) => ({ get: (_, name) => tag.bind(_undefined, ns, name) });
+    var update = (dom, newDom) => newDom ? newDom !== dom && dom.replaceWith(newDom) : dom.remove();
+    var updateDoms = () => {
+        let iter = 0, derivedStatesArray = [...changedStates].filter((s) => s.rawVal !== s._oldVal);
+        do {
+            derivedStates = /* @__PURE__ */ new Set();
+            for (let l of new Set(derivedStatesArray.flatMap((s) => s._listeners = keepConnected(s._listeners))))
+                derive(l.f, l.s, l._dom), l._dom = _undefined;
+        } while (++iter < 100 && (derivedStatesArray = [...derivedStates]).length);
+        let changedStatesArray = [...changedStates].filter((s) => s.rawVal !== s._oldVal);
+        changedStates = _undefined;
+        for (let b of new Set(changedStatesArray.flatMap((s) => s._bindings = keepConnected(s._bindings))))
+            update(b._dom, bind(b.f, b._dom)), b._dom = _undefined;
+        for (let s of changedStatesArray) s._oldVal = s.rawVal;
+    };
+    var van_default = {
+        tags: new Proxy((ns) => new Proxy(tag, handler(ns)), handler()),
+        hydrate: (dom, f) => update(dom, bind(f, dom)),
+        add,
+        state,
+        derive
+    };
+
+    // van.forbundle.js
+    window.van = van_default;
+})();

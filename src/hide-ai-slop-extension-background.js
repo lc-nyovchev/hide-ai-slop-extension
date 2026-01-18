@@ -5,6 +5,7 @@ const CONSTANTS = {
 	DEFAULT_TITLE: 'Hide AI Slop',
 	DISABLED_TITLE: 'Hide AI Slop (Disabled)'
 }
+
 class AISlopRemovalsStorage {
 	async getSlopRemovals(website) {
 		const store = await chrome.storage.sync.get()

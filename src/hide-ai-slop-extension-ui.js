@@ -1,4 +1,4 @@
-const { h1, h3, table, div, tr, td, th, span, text, i } = van.tags
+const { h1, h3, table, div, tr, td, th, text, i } = van.tags
 
 const CONSTANTS = {
 	COLOR_PALETTES: {

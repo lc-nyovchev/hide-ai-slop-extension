@@ -14,22 +14,14 @@
 		{
 			"matches": ["https://*.youtube.com/*", "https://*.google.com/*", "https://*.google.co.uk/*", "https://*.google.ca/*", "https://*.google.de/*", "https://*.google.fr/*", "https://*.google.nl/*", "https://mail.google.com/mail/*"],
 			"js": ["src/hide-ai-slop-extension.js"],
-			"host_permissions": [
-				"https://*.youtube.com/*",
-				"https://*.google.com/*",
-				"https://*.google.co.uk/*",
-				"https://*.google.ca/*",
-				"https://*.google.de/*",
-				"https://*.google.fr/*",
-				"https://*.google.nl/*",
-				"https://mail.google.com/mail/*"
-			],
 			"run_at": "document_end"
 		}
 	],
 	"permissions": ["storage"],
 	"action": {
 		"default_popup": "src/hide-ai-slop-extension.html",
-		"default_icon": "src/icons/hide-ai-slop-extension.png"
+		"default_icon": {
+			"128": "src/icons/128x-hide-ai-slop-extension.png"
+		}
 	}
 }
