@@ -8,11 +8,21 @@
 		"128": "src/icons/128x-hide-ai-slop-extension.png"
 	},
 	"background": {
-		"service_worker": "src/hide-ai-slop-extension-background.js"
+		"service_worker": "src/hide-ai-slop-extension-background.js",
+		"type": "module"
 	},
 	"content_scripts": [
 		{
-			"matches": ["https://*.youtube.com/*", "https://*.google.com/*", "https://*.google.co.uk/*", "https://*.google.ca/*", "https://*.google.de/*", "https://*.google.fr/*", "https://*.google.nl/*", "https://mail.google.com/mail/*"],
+			"matches": [
+				"https://*.youtube.com/*",
+				"https://*.google.com/*",
+				"https://*.google.co.uk/*",
+				"https://*.google.ca/*",
+				"https://*.google.de/*",
+				"https://*.google.fr/*",
+				"https://*.google.nl/*",
+				"https://mail.google.com/mail/*"
+			],
 			"js": ["src/hide-ai-slop-extension.js"],
 			"run_at": "document_end"
 		}
