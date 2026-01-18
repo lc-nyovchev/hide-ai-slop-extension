@@ -12,9 +12,9 @@ jobs:
             - name: Prepare Build Artifact
               run: |
                   mkdir build
-                  cp -r src/ icons/ manifest.json build/
+                  cp -r src/ manifest.json build/
             - name: Upload Build Artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: build
+                  name: ${{ github.ref_name }}-build
                   path: build/

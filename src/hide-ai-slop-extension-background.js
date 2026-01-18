@@ -1,6 +1,6 @@
 const CONSTANTS = {
-	DEFAULT_ICON_PATH: 'icons/48x-hide-ai-slop-extension.png',
-	DISABLED_ICON_PATH: 'icons/128x-hide-ai-slop-extension-disabled.png',
+	DEFAULT_ICON_PATH: 'src/icons/48x-hide-ai-slop-extension.png',
+	DISABLED_ICON_PATH: 'src/icons/128x-hide-ai-slop-extension-disabled.png',
 	HIDE_AI_SLOP_BLOCKING_ENABLED_KEY: 'HIDE_AI_SLOP_BLOCKING_ENABLED',
 	DEFAULT_TITLE: 'Hide AI Slop',
 	DISABLED_TITLE: 'Hide AI Slop (Disabled)'
