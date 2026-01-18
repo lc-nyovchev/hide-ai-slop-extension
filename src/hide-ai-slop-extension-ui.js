@@ -1,6 +1,6 @@
 import {STORAGE_CONSTANTS, UI_CONSTANTS} from './hide-ai-slop-extension-utils.js'
 
-const {h1, h3, table, div, tr, td, th, i} = van.tags
+const {h2, h3, table, div, tr, td, th, i} = van.tags
 
 const ThemeUtils = {
     async setTheme(theme) {
@@ -38,7 +38,7 @@ const ThemeUtils = {
 class InterfaceElementsBuilder {
     constructor(
         enabled = STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.DEFAULT_VALUE,
-        colorPalette = UI_CONSTANTS.COLOR_PALETTES.DEFAULT,
+        colorPalette = STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.DEFAULT_VALUE,
         removals = {},
         refreshInterval = 5000
     ) {
@@ -183,7 +183,7 @@ class InterfaceElementsBuilder {
     }
 
     createHeader() {
-        return h1(UI_CONSTANTS.DEFAULT_TITLE)
+        return h2(UI_CONSTANTS.DEFAULT_TITLE)
     }
 
     createDedication() {

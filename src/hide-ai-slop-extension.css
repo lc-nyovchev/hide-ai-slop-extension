@@ -34,6 +34,10 @@
     overflow: hidden;
 }
 
+body {
+    margin: 0;
+}
+
 .container {
     padding: 12px;
     display: flex;
@@ -46,6 +50,7 @@
 table {
     width: 100%;
     border-collapse: collapse;
+    min-height: 24px;
 }
 
 th {
@@ -55,8 +60,4 @@ th {
 
 tr>td:last-of-type {
     text-align: center;
-}
-
-body {
-    margin: 0;
 }
