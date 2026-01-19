@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "Hide AI Slop",
 	"description": "Extension to hide AI Slop",
-	"version": "1.7",
+	"version": "1.8",
 	"icons": {
 		"48": "src/icons/48x-hide-ai-slop-extension.png",
 		"128": "src/icons/128x-hide-ai-slop-extension.png"
