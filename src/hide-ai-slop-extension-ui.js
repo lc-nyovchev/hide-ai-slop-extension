@@ -1,4 +1,4 @@
-import {STORAGE_CONSTANTS, UI_CONSTANTS} from './hide-ai-slop-extension-utils.js'
+import {STORAGE_CONSTANTS, UI_CONSTANTS, EngineUtils} from './hide-ai-slop-extension-utils.js'
 
 const {h2, h3, table, div, tr, td, th, i} = van.tags
 
@@ -7,10 +7,10 @@ const ThemeUtils = {
         if (theme !== UI_CONSTANTS.COLOR_PALETTES.DARK && theme !== UI_CONSTANTS.COLOR_PALETTES.LIGHT) {
             console.error(`Supported themes are only ${UI_CONSTANTS.COLOR_PALETTES.DARK} and ${UI_CONSTANTS.COLOR_PALETTES.LIGHT}`)
         }
-        return await chrome.storage.sync.set({[STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.KEY]: theme})
+        return await EngineUtils.storageSet({[STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.KEY]: theme})
     },
     async getTheme() {
-        const store = await chrome.storage.sync.get()
+        const store = await EngineUtils.storageGet()
         const currentTheme = store[STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.KEY]
         if (currentTheme !== UI_CONSTANTS.COLOR_PALETTES.DARK && currentTheme !== UI_CONSTANTS.COLOR_PALETTES.LIGHT) {
             return STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.DEFAULT_VALUE
@@ -19,14 +19,14 @@ const ThemeUtils = {
         }
     },
     async setSlopBlockingEnabled(enabled) {
-        await chrome.storage.sync.set({[STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.KEY]: enabled})
-        chrome.runtime.sendMessage({
+        await EngineUtils.storageSet({[STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.KEY]: enabled})
+        EngineUtils.runtime().sendMessage({
             type: 'hideAiSlopToggleEnabled',
             enabled: enabled
         })
     },
     async isSlopBlockingEnabled() {
-        const store = await chrome.storage.sync.get()
+        const store = await EngineUtils.storageGet()
         const isEnabled = store[STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.KEY]
         if (typeof isEnabled === 'undefined') {
             return STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.DEFAULT_VALUE
@@ -51,7 +51,7 @@ class InterfaceElementsBuilder {
     }
 
     async getRemovals() {
-        const points = await chrome.storage.sync.get()
+        const points = await EngineUtils.storageGet()
         delete points[STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.KEY]
         return points
     }
@@ -141,7 +141,7 @@ class InterfaceElementsBuilder {
                     {
                         class: 'clear-button',
                         onclick: async () => {
-                            await chrome.storage.sync.remove(website)
+                            await EngineUtils.storageRemove(website)
                             deleter()
                         }
                     },

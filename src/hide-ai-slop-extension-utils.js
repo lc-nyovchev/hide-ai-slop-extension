@@ -20,3 +20,26 @@ export const STORAGE_CONSTANTS = {
         DEFAULT_VALUE: UI_CONSTANTS.COLOR_PALETTES.DARK
     }
 }
+
+export const MESSAGE_CONSTANTS = {
+    HIDE_AI_SLOP_MESSAGE: 'hideAiSlop',
+    HIDE_AI_SLOP_TOGGLE_MESSAGE: 'hideAiSlopToggleEnabled'
+}
+
+export const EngineUtils = {
+    storageSet: async (obj) => {
+        return chrome.storage.sync.set(obj)
+    },
+    storageGet: async () => {
+        return chrome.storage.sync.get()
+    },
+    storageRemove: async (key) => {
+        return chrome.storage.sync.remove(key)
+    },
+    runtime: () => {
+        return chrome.runtime
+    },
+    action: () => {
+        return chrome.action
+    }
+}

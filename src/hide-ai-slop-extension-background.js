@@ -1,8 +1,8 @@
-import {STORAGE_CONSTANTS, UI_CONSTANTS} from "./hide-ai-slop-extension-utils.js";
+import {EngineUtils, MESSAGE_CONSTANTS, STORAGE_CONSTANTS, UI_CONSTANTS} from "./hide-ai-slop-extension-utils.js";
 
 class AISlopRemovalsStorage {
     async getSlopRemovals(website) {
-        const store = await chrome.storage.sync.get()
+        const store = await EngineUtils.storageGet()
         const removals = parseInt(store[website], 10)
         if (removals) {
             return removals
@@ -12,7 +12,7 @@ class AISlopRemovalsStorage {
 
     async setSlopRemovals(website, removals) {
         console.debug(`Slop removals for ${website} set to ${removals}`)
-        return await chrome.storage.sync.set({[website]: removals})
+        return await EngineUtils.storageSet({[website]: removals})
     }
 
     isEnabled(store) {
@@ -24,14 +24,14 @@ class AISlopRemovalsStorage {
     }
 
     getIconPath(enabled) {
-        return enabled ? chrome.runtime.getURL(UI_CONSTANTS.DEFAULT_ICON_PATH) : chrome.runtime.getURL(UI_CONSTANTS.DISABLED_ICON_PATH)
+        return enabled ? EngineUtils.runtime().getURL(UI_CONSTANTS.DEFAULT_ICON_PATH) : EngineUtils.runtime().getURL(UI_CONSTANTS.DISABLED_ICON_PATH)
     }
 
     async setIconAndTitle() {
-        const store = await chrome.storage.sync.get()
+        const store = await EngineUtils.storageGet()
         const enabled = this.isEnabled(store)
-        chrome.action.setIcon({path: this.getIconPath(enabled)})
-        chrome.action.setTitle({title: enabled ? UI_CONSTANTS.DEFAULT_TITLE : UI_CONSTANTS.DISABLED_TITLE})
+        EngineUtils.action().setIcon({path: this.getIconPath(enabled)})
+        EngineUtils.action().setTitle({title: enabled ? UI_CONSTANTS.DEFAULT_TITLE : UI_CONSTANTS.DISABLED_TITLE})
     }
 }
 
@@ -39,16 +39,16 @@ const aiSlopRemovalsStorage = new AISlopRemovalsStorage()
 aiSlopRemovalsStorage.setIconAndTitle()
 
 const onContentScriptMessage = async (message, sender) => {
-    if (sender.id === chrome.runtime.id) {
-        if (message.type === 'hideAiSlop') {
+    if (sender.id === EngineUtils.runtime().id) {
+        if (message.type === MESSAGE_CONSTANTS.HIDE_AI_SLOP_MESSAGE) {
             const website = message.website
             const points = message.removals
             const existingPoints = await aiSlopRemovalsStorage.getSlopRemovals(website)
             await aiSlopRemovalsStorage.setSlopRemovals(website, existingPoints + points)
-        } else if (message.type === 'hideAiSlopToggleEnabled') {
+        } else if (message.type === MESSAGE_CONSTANTS.HIDE_AI_SLOP_TOGGLE_MESSAGE) {
             await aiSlopRemovalsStorage.setIconAndTitle()
         }
     }
 }
 
-chrome.runtime.onMessage.addListener(onContentScriptMessage)
+EngineUtils.runtime().onMessage.addListener(onContentScriptMessage)
