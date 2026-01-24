@@ -127,5 +127,7 @@ const getSlopHider = () => {
 
 const slopHider = getSlopHider()
 if (slopHider) {
-    slopHider.startObserving()
+    slopHider
+        .startObserving()
+        .catch(console.error)
 }

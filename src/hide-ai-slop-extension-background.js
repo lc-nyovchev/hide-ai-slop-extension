@@ -36,7 +36,9 @@ class AISlopRemovalsStorage {
 }
 
 const aiSlopRemovalsStorage = new AISlopRemovalsStorage()
-aiSlopRemovalsStorage.setIconAndTitle()
+aiSlopRemovalsStorage
+    .setIconAndTitle()
+    .catch(console.error)
 
 const onContentScriptMessage = async (message, sender) => {
     if (sender.id === EngineUtils.runtime().id) {
