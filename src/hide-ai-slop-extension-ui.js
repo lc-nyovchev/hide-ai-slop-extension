@@ -1,6 +1,6 @@
-import {STORAGE_CONSTANTS, UI_CONSTANTS, EngineUtils} from './hide-ai-slop-extension-utils.js'
+import {STORAGE_CONSTANTS, UI_CONSTANTS, EngineUtils, MESSAGE_CONSTANTS} from './hide-ai-slop-extension-utils.js'
 
-const {h2, h3, table, div, tr, td, th, i} = van.tags
+const {h2, h3, table, thead, tbody, div, tr, td, th, i} = van.tags
 
 const ThemeUtils = {
     async setTheme(theme) {
@@ -21,7 +21,7 @@ const ThemeUtils = {
     async setSlopBlockingEnabled(enabled) {
         await EngineUtils.storageSet({[STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.KEY]: enabled})
         EngineUtils.runtime().sendMessage({
-            type: 'hideAiSlopToggleEnabled',
+            type: MESSAGE_CONSTANTS.HIDE_AI_SLOP_TOGGLE_MESSAGE,
             enabled: enabled
         })
     },
@@ -45,7 +45,7 @@ class InterfaceElementsBuilder {
         this.refreshInterval = refreshInterval
         this.state = vanX.reactive({
             enabled: enabled,
-            removals: Object.assign(removals, {[UI_CONSTANTS.HEADER_CONSTANT]: 420}),
+            removals: removals,
             colorPalette: colorPalette
         })
     }
@@ -53,23 +53,30 @@ class InterfaceElementsBuilder {
     async getRemovals() {
         const points = await EngineUtils.storageGet()
         delete points[STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.KEY]
+        delete points[STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.KEY]
         return points
     }
 
     async checkForChanges() {
         const newRemovals = await this.getRemovals()
+        for (const website in this.state.removals) {
+            if (!newRemovals.hasOwnProperty(website)) {
+                delete this.state.removals[website]
+            }
+        }
         for (const website in newRemovals) {
-            if (!this.state.removals.hasOwnProperty(website)) {
+            if (this.state.removals[website] !== newRemovals[website]) {
                 this.state.removals[website] = newRemovals[website]
             }
         }
     }
 
     createContainer() {
+        van.derive(() => {
+            document.body.className = this.state.colorPalette
+        })
         return div(
-            {
-                class: () => `container ${this.state.colorPalette}`
-            },
+            { class: `container` },
             this.createHeader(),
             this.createControls(this.state),
             this.createDedication(),
@@ -77,19 +84,39 @@ class InterfaceElementsBuilder {
         )
     }
 
-    createTableHeader() {
-        return tr(
-            th('Website'),
-            th('Slops Removed'),
-            th('Delete')
+    createTable(removals) {
+        return table(
+            this.createTableHeader(),
+            vanX.list(tbody, removals, (score, deleter, website) => this.createTableRow(score, deleter, website))
         )
     }
 
-    createTable(removals) {
-        return vanX.list(
-            () => table({class: 'removals-values'}),
-            removals,
-            (score, deleter, website) => this.createTableRow(score, deleter, website)
+    createTableHeader() {
+        return thead(
+            tr(
+                th('Website'),
+                th('Slops Removed'),
+                th('Delete')
+            )
+        )
+    }
+
+    createTableRow(nrRemovals, deleter, website) {
+        return tr(
+            td(website),
+            td(nrRemovals),
+            td(
+                div(
+                    {
+                        class: 'clear-button',
+                        onclick: async () => {
+                            await EngineUtils.storageRemove(website)
+                            deleter()
+                        }
+                    },
+                    i({class: 'fa-solid fa-trash fa-xs', title: 'Delete'})
+                )
+            )
         )
     }
 
@@ -126,31 +153,6 @@ class InterfaceElementsBuilder {
         )
     }
 
-    createTableRow(score, deleter, website) {
-        if (website === UI_CONSTANTS.HEADER_CONSTANT) {
-            return this.createTableHeader()
-        }
-        if (website === STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.KEY) {
-            return null
-        }
-        return tr(
-            td(website),
-            td(score),
-            td(
-                div(
-                    {
-                        class: 'clear-button',
-                        onclick: async () => {
-                            await EngineUtils.storageRemove(website)
-                            deleter()
-                        }
-                    },
-                    i({class: 'fa-solid fa-trash fa-xs', title: 'Delete'})
-                )
-            )
-        )
-    }
-
     createColorPaletteSwitcher(state) {
         return div(
             {
@@ -176,7 +178,7 @@ class InterfaceElementsBuilder {
 
     createControls(state) {
         return div(
-            {class: 'controls-container'},
+            { class: 'controls-container' },
             this.createColorPaletteSwitcher(state),
             this.createToggleEnabledButton(state)
         )
