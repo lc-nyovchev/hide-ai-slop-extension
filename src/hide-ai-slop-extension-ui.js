@@ -1,6 +1,6 @@
 import {STORAGE_CONSTANTS, UI_CONSTANTS, EngineUtils, MESSAGE_CONSTANTS} from './hide-ai-slop-extension-utils.js'
 
-const {h2, h3, table, thead, tbody, div, tr, td, th, i} = van.tags
+const {h2, h3, div, i, table, thead, tbody, tr, td, th} = van.tags
 
 const ThemeUtils = {
     async setTheme(theme) {
@@ -35,7 +35,7 @@ const ThemeUtils = {
     }
 }
 
-class InterfaceElementsBuilder {
+class InterfaceBuilder {
     constructor(
         enabled = STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.DEFAULT_VALUE,
         colorPalette = STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.DEFAULT_VALUE,
@@ -76,7 +76,7 @@ class InterfaceElementsBuilder {
             document.body.className = this.state.colorPalette
         })
         return div(
-            { class: `container` },
+            {class: `container`},
             this.createHeader(),
             this.createControls(this.state),
             this.createDedication(),
@@ -94,9 +94,9 @@ class InterfaceElementsBuilder {
     createTableHeader() {
         return thead(
             tr(
-                th('Website'),
-                th('Slops Removed'),
-                th('Delete')
+                th(UI_CONSTANTS.TABLE_HEADERS.WEBSITE),
+                th(UI_CONSTANTS.TABLE_HEADERS.SLOPS_REMOVED),
+                th(UI_CONSTANTS.TABLE_HEADERS.DELETE)
             )
         )
     }
@@ -114,13 +114,19 @@ class InterfaceElementsBuilder {
                             deleter()
                         }
                     },
-                    i({class: 'fa-solid fa-trash fa-xs', title: 'Delete'})
+                    i(
+                        {
+                            class: 'fa-solid fa-trash fa-xs',
+                            title: UI_CONSTANTS.TABLE_ROWS_CONTROLS.DELETE_BUTTON_TITLE
+                        }
+                    )
                 )
             )
         )
     }
 
     createToggleEnabledButton(state) {
+        const control = UI_CONSTANTS.CONTROLS.TOGGLE_ENABLED_BUTTON
         return div(
             {
                 class: 'clear-button toggle-enabled-button',
@@ -139,15 +145,15 @@ class InterfaceElementsBuilder {
                 },
                 title: () => {
                     if (state.enabled) {
-                        return 'Disable hiding slop'
+                        return control.TITLE_ENABLED
                     } else {
-                        return 'Enable hiding slop'
+                        return control.TITLE_DISABLED
                     }
                 }
             }),
             div(
                 () => {
-                    return state.enabled ? 'On' : 'Off'
+                    return state.enabled ? control.ON_TEXT : control.OFF_TEXT
                 }
             )
         )
@@ -162,7 +168,7 @@ class InterfaceElementsBuilder {
                     await ThemeUtils.setTheme(theme)
                     state.colorPalette = theme
                 },
-                title: 'Change theme'
+                title: UI_CONSTANTS.CONTROLS.CHANGE_THEME_TITLE
             },
             i({
                 class: () => {
@@ -178,7 +184,7 @@ class InterfaceElementsBuilder {
 
     createControls(state) {
         return div(
-            { class: 'controls-container' },
+            {class: 'controls-container'},
             this.createColorPaletteSwitcher(state),
             this.createToggleEnabledButton(state)
         )
@@ -189,7 +195,7 @@ class InterfaceElementsBuilder {
     }
 
     createDedication() {
-        return h3('With ❤️ to Hania')
+        return h3(UI_CONSTANTS.DEFAULT_DEDICATION)
     }
 }
 
@@ -197,12 +203,12 @@ Promise.all([
     ThemeUtils.isSlopBlockingEnabled(),
     ThemeUtils.getTheme()
 ]).then(([enabled, theme]) => {
-    const interfaceElementsBuilder = new InterfaceElementsBuilder(enabled, theme)
-    interfaceElementsBuilder.checkForChanges().then(() => {
-        van.add(document.body, interfaceElementsBuilder.createContainer())
+    const interfaceBuilder = new InterfaceBuilder(enabled, theme)
+    interfaceBuilder.checkForChanges().then(() => {
+        van.add(document.body, interfaceBuilder.createContainer())
     })
 
     setInterval(async () => {
-        await interfaceElementsBuilder.checkForChanges()
-    }, interfaceElementsBuilder.refreshInterval)
+        await interfaceBuilder.checkForChanges()
+    }, interfaceBuilder.refreshInterval)
 })

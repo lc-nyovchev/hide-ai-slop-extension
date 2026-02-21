@@ -6,7 +6,25 @@ export const UI_CONSTANTS = {
     DEFAULT_ICON_PATH: 'src/icons/48x-hide-ai-slop-extension.png',
     DISABLED_ICON_PATH: 'src/icons/128x-hide-ai-slop-extension-disabled.png',
     DEFAULT_TITLE: 'Hide AI Slop',
-    DISABLED_TITLE: 'Hide AI Slop (Disabled)'
+    DEFAULT_DEDICATION: 'With ❤️ to Hania',
+    DISABLED_TITLE: 'Hide AI Slop (Disabled)',
+    TABLE_HEADERS: {
+        WEBSITE: 'Website',
+        SLOPS_REMOVED: 'Slops Removed',
+        DELETE: 'Delete'
+    },
+    TABLE_ROWS_CONTROLS: {
+        DELETE_BUTTON_TITLE: 'Delete'
+    },
+    CONTROLS: {
+        TOGGLE_ENABLED_BUTTON: {
+            TITLE_ENABLED: 'Disable hiding slop',
+            TITLE_DISABLED: 'Enable hiding slop',
+            ON_TEXT: 'On',
+            OFF_TEXT: 'Off'
+        },
+        CHANGE_THEME_TITLE: 'Change theme'
+    }
 }
 
 export const STORAGE_CONSTANTS = {
