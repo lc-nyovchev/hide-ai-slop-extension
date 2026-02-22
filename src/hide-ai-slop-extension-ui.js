@@ -1,6 +1,6 @@
 import {STORAGE_CONSTANTS, UI_CONSTANTS, EngineUtils, MESSAGE_CONSTANTS} from './hide-ai-slop-extension-utils.js'
 
-const {h2, h3, div, i, table, thead, tbody, tr, td, th} = van.tags
+const {h2, h3, div, i, table, thead, tbody, tr, td, th, input} = van.tags
 
 const ThemeUtils = {
     async setTheme(theme) {
@@ -14,9 +14,8 @@ const ThemeUtils = {
         const currentTheme = store[STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.KEY]
         if (currentTheme !== UI_CONSTANTS.COLOR_PALETTES.DARK && currentTheme !== UI_CONSTANTS.COLOR_PALETTES.LIGHT) {
             return STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.DEFAULT_VALUE
-        } else {
-            return currentTheme
         }
+        return currentTheme
     },
     async setSlopBlockingEnabled(enabled) {
         await EngineUtils.storageSet({[STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.KEY]: enabled})
@@ -32,6 +31,17 @@ const ThemeUtils = {
             return STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.DEFAULT_VALUE
         }
         return isEnabled
+    },
+    async getDedication() {
+        const store = await EngineUtils.storageGet()
+        const dedication = store[STORAGE_CONSTANTS.SLOP_BLOCKING_DEDICATION.KEY]
+        if (typeof dedication === 'undefined') {
+            return STORAGE_CONSTANTS.SLOP_BLOCKING_DEDICATION.DEFAULT_VALUE
+        }
+        return dedication
+    },
+    async setDedication(dedication) {
+        return await EngineUtils.storageSet({[STORAGE_CONSTANTS.SLOP_BLOCKING_DEDICATION.KEY]: dedication})
     }
 }
 
@@ -39,6 +49,7 @@ class InterfaceBuilder {
     constructor(
         enabled = STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.DEFAULT_VALUE,
         colorPalette = STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.DEFAULT_VALUE,
+        dedication = STORAGE_CONSTANTS.SLOP_BLOCKING_DEDICATION.DEFAULT_VALUE,
         removals = {},
         refreshInterval = 5000
     ) {
@@ -46,17 +57,17 @@ class InterfaceBuilder {
         this.state = vanX.reactive({
             enabled: enabled,
             removals: removals,
-            colorPalette: colorPalette
+            colorPalette: colorPalette,
+            dedication: dedication
         })
     }
-
     async getRemovals() {
         const points = await EngineUtils.storageGet()
         delete points[STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.KEY]
         delete points[STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.KEY]
+        delete points[STORAGE_CONSTANTS.SLOP_BLOCKING_DEDICATION.KEY]
         return points
     }
-
     async checkForChanges() {
         const newRemovals = await this.getRemovals()
         for (const website in this.state.removals) {
@@ -70,7 +81,6 @@ class InterfaceBuilder {
             }
         }
     }
-
     createContainer() {
         van.derive(() => {
             document.body.className = this.state.colorPalette
@@ -79,18 +89,16 @@ class InterfaceBuilder {
             {class: `container`},
             this.createHeader(),
             this.createControls(this.state),
-            this.createDedication(),
+            this.createDedication(this.state),
             this.createTable(this.state.removals)
         )
     }
-
     createTable(removals) {
         return table(
             this.createTableHeader(),
             vanX.list(tbody, removals, (score, deleter, website) => this.createTableRow(score, deleter, website))
         )
     }
-
     createTableHeader() {
         return thead(
             tr(
@@ -100,7 +108,6 @@ class InterfaceBuilder {
             )
         )
     }
-
     createTableRow(nrRemovals, deleter, website) {
         return tr(
             td(website),
@@ -129,7 +136,6 @@ class InterfaceBuilder {
             )
         )
     }
-
     createToggleEnabledButton(state) {
         const control = UI_CONSTANTS.CONTROLS.TOGGLE_ENABLED_BUTTON
         return div(
@@ -168,7 +174,6 @@ class InterfaceBuilder {
             )
         )
     }
-
     createColorPaletteSwitcher(state) {
         return div(
             {
@@ -196,7 +201,6 @@ class InterfaceBuilder {
             )
         )
     }
-
     createControls(state) {
         return div(
             {class: 'controls-container'},
@@ -204,25 +208,61 @@ class InterfaceBuilder {
             this.createToggleEnabledButton(state)
         )
     }
-
     createHeader() {
         return h2(UI_CONSTANTS.DEFAULT_TITLE)
     }
-
-    createDedication() {
-        return h3(UI_CONSTANTS.DEFAULT_DEDICATION)
+    createDedication(state) {
+        const editMode = van.state(false)
+        return h3(
+            {
+                onclick: () => {
+                    editMode.val = !editMode.val
+                }
+            },
+            () => {
+                if (!editMode.val) {
+                    return div(
+                        {
+                            title: UI_CONSTANTS.CONTROLS.DEDICATION.TITLE_EDIT
+                        },
+                        state.dedication
+                    )
+                } else {
+                    return input(
+                        {
+                            value: () => state.dedication,
+                            onfocusout: () => {
+                                editMode.val = false
+                            },
+                            oninput: (event) => {
+                                state.dedication = event.target.value
+                                ThemeUtils.setDedication(state.dedication)
+                            },
+                            onclick: (event) => {
+                                event.stopPropagation()
+                            },
+                            onkeydown: (event) => {
+                                if (event.code === 'Enter') {
+                                    editMode.val = false
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+        )
     }
 }
 
 Promise.all([
     ThemeUtils.isSlopBlockingEnabled(),
-    ThemeUtils.getTheme()
-]).then(([enabled, theme]) => {
-    const interfaceBuilder = new InterfaceBuilder(enabled, theme)
+    ThemeUtils.getTheme(),
+    ThemeUtils.getDedication(),
+]).then(([enabled, theme, dedication]) => {
+    const interfaceBuilder = new InterfaceBuilder(enabled, theme, dedication)
     interfaceBuilder.checkForChanges().then(() => {
         van.add(document.body, interfaceBuilder.createContainer())
     })
-
     setInterval(async () => {
         await interfaceBuilder.checkForChanges()
     }, interfaceBuilder.refreshInterval)

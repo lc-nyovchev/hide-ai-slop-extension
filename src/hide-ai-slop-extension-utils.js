@@ -7,7 +7,6 @@ export const UI_CONSTANTS = {
     DISABLED_ICON_PATH: 'src/icons/128x-hide-ai-slop-extension-disabled.png',
     DEFAULT_TITLE: 'Hide AI Slop',
     DISABLED_TITLE: 'Hide AI Slop (Disabled)',
-    DEFAULT_DEDICATION: 'With ❤️ to Hania',
     TABLE_HEADERS: {
         WEBSITE: 'Website',
         SLOPS_REMOVED: 'Slops Removed',
@@ -23,7 +22,11 @@ export const UI_CONSTANTS = {
             ON_TEXT: 'On',
             OFF_TEXT: 'Off'
         },
-        CHANGE_THEME_TITLE: 'Change theme'
+        CHANGE_THEME_TITLE: 'Change theme',
+        DEDICATION: {
+            DEFAULT_DEDICATION: 'With ❤️ to Hania',
+            TITLE_EDIT: 'Click to edit dedication'
+        }
     }
 }
 
@@ -35,6 +38,10 @@ export const STORAGE_CONSTANTS = {
     SLOP_BLOCKING_THEME: {
         KEY: 'HIDE_AI_SLOP_THEME',
         DEFAULT_VALUE: UI_CONSTANTS.COLOR_PALETTES.DARK
+    },
+    SLOP_BLOCKING_DEDICATION: {
+        KEY: 'HIDE_AI_SLOP_DEDICATION',
+        DEFAULT_VALUE: UI_CONSTANTS.CONTROLS.DEDICATION.DEFAULT_DEDICATION
     }
 }
 
