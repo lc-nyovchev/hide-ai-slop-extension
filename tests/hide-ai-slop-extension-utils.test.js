@@ -23,10 +23,6 @@ describe('UI_CONSTANTS', () => {
         expect(UI_CONSTANTS.DISABLED_TITLE).toBe('Hide AI Slop (Disabled)')
     })
 
-    it('should have correct default dedication', () => {
-        expect(UI_CONSTANTS.DEFAULT_DEDICATION).toBe('With ❤️ to Hania')
-    })
-
     it('should have correct table headers', () => {
         expect(UI_CONSTANTS.TABLE_HEADERS.WEBSITE).toBe('Website')
         expect(UI_CONSTANTS.TABLE_HEADERS.SLOPS_REMOVED).toBe('Slops Removed')
@@ -46,6 +42,10 @@ describe('UI_CONSTANTS', () => {
         })
         it('for the change theme title', () => {
             expect(UI_CONSTANTS.CONTROLS.CHANGE_THEME_TITLE).toBe('Change theme')
+        })
+        it('for the dedication', () => {
+            expect(UI_CONSTANTS.CONTROLS.DEDICATION.DEFAULT_DEDICATION).toBe('With ❤️ to Hania')
+            expect(UI_CONSTANTS.CONTROLS.DEDICATION.TITLE_EDIT).toBe('Click to edit dedication')
         })
     })
 })
