@@ -18,3 +18,9 @@ You can find the extension directly in the [Chrome Webstore](https://chromewebst
 1. Simply clone the repository
 2. Go to `Chrome` -> `Extensions`
 3. Select `Load Unpacked` and point to where you checked out the repository
+
+## Testing
+### Install proper npm version
+`nvm install`
+### Run the tests
+`npm run test`

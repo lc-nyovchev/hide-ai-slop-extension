@@ -6,8 +6,8 @@ export const UI_CONSTANTS = {
     DEFAULT_ICON_PATH: 'src/icons/48x-hide-ai-slop-extension.png',
     DISABLED_ICON_PATH: 'src/icons/128x-hide-ai-slop-extension-disabled.png',
     DEFAULT_TITLE: 'Hide AI Slop',
-    DEFAULT_DEDICATION: 'With ❤️ to Hania',
     DISABLED_TITLE: 'Hide AI Slop (Disabled)',
+    DEFAULT_DEDICATION: 'With ❤️ to Hania',
     TABLE_HEADERS: {
         WEBSITE: 'Website',
         SLOPS_REMOVED: 'Slops Removed',
