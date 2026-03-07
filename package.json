@@ -1,0 +1,16 @@
+{
+    "name": "hide-ai-slop-extension",
+    "version": "1.11",
+    "directories": {
+        "test": "tests"
+    },
+    "scripts": {
+        "test": "vitest"
+    },
+    "author": "lc-nyovchev",
+    "license": "MIT",
+    "devDependencies": {
+        "vite": "^7.3.1",
+        "vitest": "^4.0.18"
+    }
+}
