@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { UI_CONSTANTS, STORAGE_CONSTANTS } from '../src/hide-ai-slop-extension-utils.js'
+import { UI_CONSTANTS, STORAGE_CONSTANTS, MESSAGE_CONSTANTS } from '../src/hide-ai-slop-extension-utils.js'
 
 describe('UI_CONSTANTS', () => {
     it('should have correct color palettes', () => {
@@ -67,6 +67,15 @@ describe('STORAGE_CONSTANTS', () => {
             expect(STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.DEFAULT_VALUE).toBe(UI_CONSTANTS.COLOR_PALETTES.DARK)
         })
     })
-});
+})
+
+describe('MESSAGE_CONSTANTS', () => {
+    it('should have correct key for slop counting message', () => {
+        expect(MESSAGE_CONSTANTS.HIDE_AI_SLOP_MESSAGE).toBe('hideAiSlop')
+    })
+    it('should have correct key for toggle message', () => {
+        expect(MESSAGE_CONSTANTS.HIDE_AI_SLOP_TOGGLE_MESSAGE).toBe('hideAiSlopToggleEnabled')
+    })
+})
 
 
