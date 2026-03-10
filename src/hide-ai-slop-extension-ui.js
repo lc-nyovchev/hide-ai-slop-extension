@@ -108,17 +108,22 @@ class InterfaceBuilder {
             td(
                 div(
                     {
-                        class: 'clear-button',
-                        onclick: async () => {
-                            await EngineUtils.storageRemove(website)
-                            deleter()
-                        }
+                        class: 'button-container'
                     },
-                    i(
+                    div(
                         {
-                            class: 'fa-solid fa-trash fa-xs',
+                            class: 'button-inner-container',
+                            onclick: async () => {
+                                await EngineUtils.storageRemove(website)
+                                deleter()
+                            },
                             title: UI_CONSTANTS.TABLE_ROWS_CONTROLS.DELETE_BUTTON_TITLE
-                        }
+                        },
+                        i(
+                            {
+                                class: 'fa-solid fa-trash fa-xs'
+                            }
+                        )
                     )
                 )
             )
@@ -129,32 +134,37 @@ class InterfaceBuilder {
         const control = UI_CONSTANTS.CONTROLS.TOGGLE_ENABLED_BUTTON
         return div(
             {
-                class: 'clear-button toggle-enabled-button',
-                onclick: async () => {
-                    await ThemeUtils.setSlopBlockingEnabled(!state.enabled)
-                    state.enabled = !state.enabled
-                },
+                class: 'button-container toggle-enabled-button'
             },
-            i({
-                class: () => {
-                    if (state.enabled) {
-                        return 'fa-solid fa-toggle-on fa-lg'
-                    } else {
-                        return 'fa-solid fa-toggle-off fa-lg'
+            div(
+                {
+                    class: 'button-inner-container',
+                    onclick: async () => {
+                        await ThemeUtils.setSlopBlockingEnabled(!state.enabled)
+                        state.enabled = !state.enabled
+                    },
+                    title: () => {
+                        if (state.enabled) {
+                            return control.TITLE_ENABLED
+                        } else {
+                            return control.TITLE_DISABLED
+                        }
                     }
                 },
-                title: () => {
-                    if (state.enabled) {
-                        return control.TITLE_ENABLED
-                    } else {
-                        return control.TITLE_DISABLED
+                i({
+                    class: () => {
+                        if (state.enabled) {
+                            return 'fa-solid fa-toggle-on fa-lg'
+                        } else {
+                            return 'fa-solid fa-toggle-off fa-lg'
+                        }
                     }
-                }
-            }),
-            div(
-                () => {
-                    return state.enabled ? control.ON_TEXT : control.OFF_TEXT
-                }
+                }),
+                div(
+                    () => {
+                        return state.enabled ? control.ON_TEXT : control.OFF_TEXT
+                    }
+                )
             )
         )
     }
@@ -162,23 +172,28 @@ class InterfaceBuilder {
     createColorPaletteSwitcher(state) {
         return div(
             {
-                class: 'clear-button color-switcher',
-                onclick: async () => {
-                    const theme = state.colorPalette === UI_CONSTANTS.COLOR_PALETTES.LIGHT ? UI_CONSTANTS.COLOR_PALETTES.DARK : UI_CONSTANTS.COLOR_PALETTES.LIGHT
-                    await ThemeUtils.setTheme(theme)
-                    state.colorPalette = theme
-                },
-                title: UI_CONSTANTS.CONTROLS.CHANGE_THEME_TITLE
+                class: 'button-container color-switcher'
             },
-            i({
-                class: () => {
-                    if (state.colorPalette === UI_CONSTANTS.COLOR_PALETTES.LIGHT) {
-                        return 'fa-regular fa-sun fa-lg'
-                    } else {
-                        return 'fa-regular fa-moon fa-lg'
+            div(
+                {
+                    class: 'button-inner-container',
+                    onclick: async () => {
+                        const theme = state.colorPalette === UI_CONSTANTS.COLOR_PALETTES.LIGHT ? UI_CONSTANTS.COLOR_PALETTES.DARK : UI_CONSTANTS.COLOR_PALETTES.LIGHT
+                        await ThemeUtils.setTheme(theme)
+                        state.colorPalette = theme
+                    },
+                    title: UI_CONSTANTS.CONTROLS.CHANGE_THEME_TITLE
+                },
+                i({
+                    class: () => {
+                        if (state.colorPalette === UI_CONSTANTS.COLOR_PALETTES.LIGHT) {
+                            return 'fa-regular fa-sun fa-lg'
+                        } else {
+                            return 'fa-regular fa-moon fa-lg'
+                        }
                     }
-                }
-            })
+                })
+            )
         )
     }
 

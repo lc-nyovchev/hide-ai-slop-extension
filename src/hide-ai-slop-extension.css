@@ -10,11 +10,16 @@
     background-color: #000;
 }
 
-.clear-button {
+.button-inner-container {
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 4px;
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
 }
 
 .controls-container {
