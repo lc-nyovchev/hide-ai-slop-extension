@@ -228,7 +228,7 @@ class InterfaceBuilder {
                         state.dedication
                     )
                 } else {
-                    return input(
+                    const inputElement = input(
                         {
                             value: () => state.dedication,
                             onfocusout: () => {
@@ -244,10 +244,15 @@ class InterfaceBuilder {
                             onkeydown: (event) => {
                                 if (event.code === 'Enter') {
                                     editMode.val = false
+                                } else if (event.code === 'Escape') {
+                                    event.preventDefault()
+                                    editMode.val = false
                                 }
                             }
                         }
                     )
+                    setTimeout(() => inputElement.focus())
+                    return inputElement
                 }
             }
         )
