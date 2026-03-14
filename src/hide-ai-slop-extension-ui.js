@@ -226,7 +226,7 @@ class InterfaceBuilder {
                     return div(
                         {
                             class: 'dedication-container',
-                            title: UI_CONSTANTS.CONTROLS.DEDICATION.PLACEHOLDER
+                            title: UI_CONSTANTS.CONTROLS.DEDICATION.TITLE_EDIT
                         },
                         state.dedication,
                         i(
@@ -239,7 +239,7 @@ class InterfaceBuilder {
                     const inputElement = input(
                         {
                             value: () => state.dedication,
-                            placeholder: UI_CONSTANTS.CONTROLS.DEDICATION.DEFAULT_DEDICATION,
+                            placeholder: UI_CONSTANTS.CONTROLS.DEDICATION.PLACEHOLDER,
                             onfocusout: () => {
                                 editMode.val = false
                             },
