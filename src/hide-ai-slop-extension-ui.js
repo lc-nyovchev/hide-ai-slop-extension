@@ -203,7 +203,9 @@ class InterfaceBuilder {
     }
     createControls(state) {
         return div(
-            {class: 'controls-container'},
+            {
+                class: 'controls-container'
+            },
             this.createColorPaletteSwitcher(state),
             this.createToggleEnabledButton(state)
         )
@@ -223,14 +225,21 @@ class InterfaceBuilder {
                 if (!editMode.val) {
                     return div(
                         {
-                            title: UI_CONSTANTS.CONTROLS.DEDICATION.TITLE_EDIT
+                            class: 'dedication-container',
+                            title: UI_CONSTANTS.CONTROLS.DEDICATION.PLACEHOLDER
                         },
-                        state.dedication
+                        state.dedication,
+                        i(
+                            {
+                                class: 'fa-solid fa-pencil fa-xs edit-icon'
+                            }
+                        )
                     )
                 } else {
                     const inputElement = input(
                         {
                             value: () => state.dedication,
+                            placeholder: UI_CONSTANTS.CONTROLS.DEDICATION.DEFAULT_DEDICATION,
                             onfocusout: () => {
                                 editMode.val = false
                             },

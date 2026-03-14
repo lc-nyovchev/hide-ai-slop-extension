@@ -25,7 +25,8 @@ export const UI_CONSTANTS = {
         CHANGE_THEME_TITLE: 'Change theme',
         DEDICATION: {
             DEFAULT_DEDICATION: 'With ❤️ to Hania',
-            TITLE_EDIT: 'Click to edit dedication'
+            TITLE_EDIT: 'Click to edit dedication',
+            PLACEHOLDER: 'Enter dedication'
         }
     }
 }

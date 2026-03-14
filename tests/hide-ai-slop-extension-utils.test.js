@@ -39,6 +39,7 @@ describe('UI_CONSTANTS', () => {
         it('for the dedication', () => {
             expect(UI_CONSTANTS.CONTROLS.DEDICATION.DEFAULT_DEDICATION).toBe('With ❤️ to Hania')
             expect(UI_CONSTANTS.CONTROLS.DEDICATION.TITLE_EDIT).toBe('Click to edit dedication')
+            expect(UI_CONSTANTS.CONTROLS.DEDICATION.PLACEHOLDER).toBe('Enter dedication')
         })
     })
 })

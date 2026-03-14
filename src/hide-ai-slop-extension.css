@@ -63,6 +63,31 @@ th {
     text-align: inherit;
 }
 
-tr>td:last-of-type {
+tr > td:last-of-type {
     text-align: center;
 }
+
+.dedication-container {
+    cursor: pointer;
+    border: 1px dashed transparent;
+    padding: 2px 4px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: border-color 0.5s, background-color 0.5s;
+    &:hover {
+        border-color: currentColor;
+        background-color: rgba(128, 128, 128, 0.1);
+        .edit-icon {
+            opacity: 0.5;
+        }
+    }
+    .edit-icon {
+        opacity: 0;
+        transition: opacity 0.5s;
+    }
+}
+
+
+
