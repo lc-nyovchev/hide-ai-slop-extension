@@ -1,0 +1,68 @@
+import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {ThemeUtils} from '../../src/utils/hide-ai-slop-extension-ui-utils.js'
+import {MESSAGE_CONSTANTS, STORAGE_CONSTANTS} from '../../src/utils/hide-ai-slop-extension-utils.js'
+import testUtils from "../test-utils";
+
+vi.hoisted(async () => {
+    const van = await import('vanjs-core')
+    const vanX = await import('vanjs-ext')
+    globalThis.van = van.default || van
+    globalThis.vanX = vanX
+})
+
+describe('ThemeUtils', () => {
+    beforeEach((context) => {
+        const engineUtils = testUtils.mockEngineUtils()
+        context.themeUtils = new ThemeUtils(engineUtils)
+        context.engineUtils = engineUtils
+    })
+    describe('setTheme', () => {
+        it('should call the proper internals for dark', async ({themeUtils, engineUtils}) => {
+            await themeUtils.setTheme('dark')
+
+            expect(engineUtils.storageSet).toHaveBeenCalledWith({[STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.KEY]: 'dark'})
+        })
+        it('should call the proper internals for light', async ({themeUtils, engineUtils}) => {
+            await themeUtils.setTheme('light')
+
+            expect(engineUtils.storageSet).toHaveBeenCalledWith({[STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.KEY]: 'light'})
+        })
+        it('should throw error on unsupported theme', async ({themeUtils, engineUtils}) => {
+            await expect(themeUtils.setTheme('unsupported theme'))
+                .rejects
+                .toThrow('Supported themes are only dark and light')
+            expect(engineUtils.storageSet).not.toHaveBeenCalled()
+        })
+    })
+    describe('getTheme', () => {
+        it('should return the dark theme by default', async ({themeUtils, engineUtils}) => {
+            engineUtils.storageGet.mockResolvedValueOnce({})
+
+            const theme = await themeUtils.getTheme()
+
+            expect(theme).toBe('dark')
+            expect(engineUtils.storageGet).toHaveBeenCalled()
+        })
+        it('should return the correct theme if set', async ({themeUtils, engineUtils}) => {
+            engineUtils.storageGet.mockResolvedValueOnce({[STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.KEY]: 'light'})
+
+            const theme = await themeUtils.getTheme()
+
+            expect(theme).toBe('light')
+            expect(engineUtils.storageGet).toHaveBeenCalled()
+        })
+    })
+    describe('setSlopBlockingEnabled', () => {
+        it('should call the proper internals', async ({themeUtils, engineUtils}) => {
+            await themeUtils.setSlopBlockingEnabled(true)
+
+            expect(engineUtils.storageSet).toHaveBeenCalledWith({[STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.KEY]: true})
+            expect(engineUtils.runtime).toHaveBeenCalled()
+            expect(engineUtils.runtime().sendMessage).toHaveBeenCalledWith({
+                type: MESSAGE_CONSTANTS.HIDE_AI_SLOP_TOGGLE_MESSAGE,
+                enabled: true
+            })
+        })
+    })
+})
+
