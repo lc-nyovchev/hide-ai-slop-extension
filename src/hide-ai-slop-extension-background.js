@@ -34,7 +34,7 @@ class AISlopRemovalsStorage {
     }
 }
 
-Promise.resolve(new EngineUtils()).then((engineUtils) => {
+Promise.resolve(new EngineUtils(chrome)).then((engineUtils) => {
     const aiSlopRemovalsStorage = new AISlopRemovalsStorage(engineUtils)
     aiSlopRemovalsStorage
         .setIconAndTitle()
