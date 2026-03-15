@@ -1,5 +1,6 @@
-import {beforeEach, describe, it, expect, vi} from 'vitest'
-import {UI_CONSTANTS, STORAGE_CONSTANTS, MESSAGE_CONSTANTS, EngineUtils} from '../src/hide-ai-slop-extension-utils.js'
+import {beforeEach, describe, expect, it} from 'vitest'
+import testUtils from '../test-utils.js'
+import {EngineUtils, MESSAGE_CONSTANTS, STORAGE_CONSTANTS, UI_CONSTANTS} from '../../src/utils/hide-ai-slop-extension-utils.js'
 
 describe('UI_CONSTANTS', () => {
     it('should have correct color palettes', () => {
@@ -74,48 +75,43 @@ describe('MESSAGE_CONSTANTS', () => {
 
 describe('EngineUtils', () => {
     beforeEach((context) => {
-        const namedMock = name => vi.fn().mockName(name)
-        const chrome = {
-            storage: {
-                sync: {
-                    set: namedMock('set'),
-                    get: namedMock('get'),
-                    remove: namedMock('remove')
-                }
-            },
-            runtime: namedMock('runtime'),
-            action: namedMock('action')
-        }
+        const chrome = testUtils.mockChrome()
+        const engineUtils = new EngineUtils(chrome)
         context.chrome = chrome
-        vi.stubGlobal('chrome', chrome)
+        context.engineUtils = engineUtils
     })
-    it('storageSet should call the proper internals', async ({chrome}) => {
+    it('storageSet should call the proper internals', async ({engineUtils, chrome}) => {
         const value = {key: 'value'}
-        await EngineUtils.storageSet(value)
+
+        await engineUtils.storageSet(value)
+
         expect(chrome.storage.sync.set).toHaveBeenCalledWith(value)
     })
     describe('storageGet', () => {
-        it('should call the proper internals', async ({chrome}) => {
-            await EngineUtils.storageGet()
+        it('should call the proper internals', async ({engineUtils, chrome}) => {
+            await engineUtils.storageGet()
+
             expect(chrome.storage.sync.get).toHaveBeenCalled()
         })
-        it('should return the correct value', async ({chrome}) => {
+        it('should return the correct value', async ({engineUtils, chrome}) => {
             const expectedResult = {youtube: '420', google: '1337', gmail: '1911'}
             chrome.storage.sync.get.mockResolvedValueOnce(expectedResult)
-            const storage = await EngineUtils.storageGet()
+
+            const storage = await engineUtils.storageGet()
+
             expect(storage).toEqual(expectedResult)
         })
     })
-    it('storageRemove call the proper internals', async ({chrome}) => {
-        const website = 'google'
-        await EngineUtils.storageRemove(website)
-        expect(chrome.storage.sync.remove).toHaveBeenCalledWith(website)
+    it('storageRemove call the proper internals', async ({engineUtils, chrome}) => {
+        await engineUtils.storageRemove('google')
+
+        expect(chrome.storage.sync.remove).toHaveBeenCalledWith('google')
     })
-    it('runtime call the proper internals', ({chrome}) => {
-        expect(EngineUtils.runtime()).toBe(chrome.runtime)
+    it('runtime call the proper internals', ({engineUtils, chrome}) => {
+        expect(engineUtils.runtime()).toBe(chrome.runtime)
     })
-    it('action call the proper internals', ({chrome}) => {
-        expect(EngineUtils.action()).toBe(chrome.action)
+    it('action call the proper internals', ({engineUtils, chrome}) => {
+        expect(engineUtils.action()).toBe(chrome.action)
     })
 })
 

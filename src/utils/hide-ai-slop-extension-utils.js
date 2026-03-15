@@ -51,20 +51,23 @@ export const MESSAGE_CONSTANTS = {
     HIDE_AI_SLOP_TOGGLE_MESSAGE: 'hideAiSlopToggleEnabled'
 }
 
-export const EngineUtils = {
-    storageSet: async (obj) => {
-        return chrome.storage.sync.set(obj)
-    },
-    storageGet: async () => {
-        return chrome.storage.sync.get()
-    },
-    storageRemove: async (key) => {
-        return chrome.storage.sync.remove(key)
-    },
-    runtime: () => {
-        return chrome.runtime
-    },
-    action: () => {
-        return chrome.action
+export class EngineUtils {
+    constructor(chrome = chrome) {
+        this.chrome = chrome
+    }
+    storageSet = async (obj) => {
+        return this.chrome.storage.sync.set(obj)
+    }
+    storageGet = async () => {
+        return this.chrome.storage.sync.get()
+    }
+    storageRemove = async (key) => {
+        return this.chrome.storage.sync.remove(key)
+    }
+    runtime = () => {
+        return this.chrome.runtime
+    }
+    action = () => {
+        return this.chrome.action
     }
 }
