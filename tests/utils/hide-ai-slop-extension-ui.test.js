@@ -64,5 +64,67 @@ describe('ThemeUtils', () => {
             })
         })
     })
+    describe('isSlopBlockingEnabled', () => {
+        it('should be enabled by default on empty store', async ({themeUtils, engineUtils}) => {
+            engineUtils.storageGet.mockResolvedValueOnce({})
+
+            const isEnabled = await themeUtils.isSlopBlockingEnabled()
+
+            expect(isEnabled).toBe(STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.DEFAULT_VALUE)
+            expect(engineUtils.storageGet).toHaveBeenCalled()
+        })
+        it('should be enabled by default on missing key', async ({themeUtils, engineUtils}) => {
+            engineUtils.storageGet.mockResolvedValueOnce({'unrelatedKey': true})
+
+            const isEnabled = await themeUtils.isSlopBlockingEnabled()
+
+            expect(isEnabled).toBe(STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.DEFAULT_VALUE)
+            expect(engineUtils.storageGet).toHaveBeenCalled()
+        })
+        it('should get the value out of the store', async ({themeUtils, engineUtils}) => {
+            engineUtils.storageGet.mockResolvedValueOnce({[STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.KEY]: false})
+
+            const isEnabled = await themeUtils.isSlopBlockingEnabled()
+
+            expect(isEnabled).toBe(false)
+            expect(engineUtils.storageGet).toHaveBeenCalled()
+        })
+    })
+    describe('getDedication', () => {
+        it('should return the default dedication on empty store', async ({themeUtils, engineUtils}) => {
+            engineUtils.storageGet.mockResolvedValueOnce({})
+
+            const dedication = await themeUtils.getDedication()
+
+            expect(dedication).toBe(STORAGE_CONSTANTS.SLOP_BLOCKING_DEDICATION.DEFAULT_VALUE)
+            expect(engineUtils.storageGet).toHaveBeenCalled()
+        })
+        it('should return the default dedication on missing key', async ({themeUtils, engineUtils}) => {
+            engineUtils.storageGet.mockResolvedValueOnce({'unrelatedKey': 'such value'})
+
+            const dedication = await themeUtils.getDedication()
+
+            expect(dedication).toBe(STORAGE_CONSTANTS.SLOP_BLOCKING_DEDICATION.DEFAULT_VALUE)
+            expect(engineUtils.storageGet).toHaveBeenCalled()
+        })
+        it('should return the default dedication on missing key', async ({themeUtils, engineUtils}) => {
+            const overriddenDedication = 'Even more ❤️💕💘 for Hania'
+            engineUtils.storageGet.mockResolvedValueOnce({[STORAGE_CONSTANTS.SLOP_BLOCKING_DEDICATION.KEY]: overriddenDedication})
+
+            const dedication = await themeUtils.getDedication()
+
+            expect(dedication).toBe(overriddenDedication)
+            expect(engineUtils.storageGet).toHaveBeenCalled()
+        })
+    })
+    describe('setDedication', () => {
+        it('should call the proper internals', async ({themeUtils, engineUtils}) => {
+            const overriddenDedication = 'A tremendous amount of 💖💞 and 🤗 for Hania'
+
+            await themeUtils.setDedication(overriddenDedication)
+
+            expect(engineUtils.storageSet).toHaveBeenCalledWith({[STORAGE_CONSTANTS.SLOP_BLOCKING_DEDICATION.KEY]: overriddenDedication})
+        })
+    })
 })
 
