@@ -126,5 +126,38 @@ describe('ThemeUtils', () => {
             expect(engineUtils.storageSet).toHaveBeenCalledWith({[STORAGE_CONSTANTS.SLOP_BLOCKING_DEDICATION.KEY]: overriddenDedication})
         })
     })
+    describe('getRemovals', () => {
+        it('should return the default value on empty store', async ({themeUtils, engineUtils}) => {
+            engineUtils.storageGet.mockResolvedValueOnce({})
+
+            const removals = await themeUtils.getRemovals()
+
+            expect(removals).toStrictEqual({})
+            expect(engineUtils.storageGet).toHaveBeenCalled()
+        })
+        it('should prune the website key', async ({themeUtils, engineUtils}) => {
+            engineUtils.storageGet.mockResolvedValueOnce({
+                [STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.KEY]: 'dark',
+                'google': 420,
+                'youtube': 1337,
+                [STORAGE_CONSTANTS.SLOP_BLOCKING_DEDICATION.KEY]: 'With 💖💞 love to Hania',
+                [STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.KEY]: false
+            })
+
+            const removals = await themeUtils.getRemovals()
+
+            expect(removals).toStrictEqual({'google': 420, 'youtube': 1337})
+            expect(engineUtils.storageGet).toHaveBeenCalled()
+        })
+    })
+    describe('removeWebsite', () => {
+        it('should call the proper internals', async ({themeUtils, engineUtils}) => {
+            const website = 'google'
+
+            await themeUtils.removeWebsite(website)
+
+            expect(engineUtils.storageRemove).toHaveBeenCalledWith(website)
+        })
+    })
 })
 
