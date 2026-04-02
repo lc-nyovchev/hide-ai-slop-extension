@@ -1,5 +1,5 @@
-import {vi} from "vitest";
-import {EngineUtils} from "../src/utils/hide-ai-slop-extension-utils.js";
+import {vi} from "vitest"
+import {EngineUtils} from "../src/utils/hide-ai-slop-extension-utils.js"
 
 export default {
     namedMock: name => vi.fn().mockName(name),

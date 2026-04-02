@@ -1,4 +1,4 @@
-import {EngineUtils, MESSAGE_CONSTANTS, STORAGE_CONSTANTS, UI_CONSTANTS} from "./utils/hide-ai-slop-extension-utils.js";
+import {EngineUtils, MESSAGE_CONSTANTS, STORAGE_CONSTANTS, UI_CONSTANTS} from "./utils/hide-ai-slop-extension-utils.js"
 
 class AISlopRemovalsStorage {
     constructor(engineUtils = new EngineUtils()) {

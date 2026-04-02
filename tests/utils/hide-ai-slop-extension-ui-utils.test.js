@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {ThemeUtils} from '../../src/utils/hide-ai-slop-extension-ui-utils.js'
 import {MESSAGE_CONSTANTS, STORAGE_CONSTANTS} from '../../src/utils/hide-ai-slop-extension-utils.js'
-import testUtils from "../test-utils";
+import testUtils from "../test-utils"
 
 vi.hoisted(async () => {
     const van = await import('vanjs-core')
