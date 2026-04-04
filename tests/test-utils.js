@@ -27,5 +27,8 @@ export default {
             }
         })
         return mockEngineUtils
+    },
+    sanitizeHtml(html) {
+       return `"${html.replace(/>\s+</g, '><').trim()}"`
     }
 }
