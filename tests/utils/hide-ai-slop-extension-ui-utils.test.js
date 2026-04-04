@@ -172,7 +172,7 @@ describe('ui-utils', () => {
 			})
 			it('should create a table row with the correct data and handlers', async ({ interfaceBuilder }) => {
 				const nrRemovals = 42
-				const website = 'grubby'
+				const website = 'youtube'
 				const deleter = vi.fn()
 
 				const row = interfaceBuilder.createTableRow(nrRemovals, deleter, website)
