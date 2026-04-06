@@ -191,6 +191,23 @@ describe('ui-utils', () => {
                     </tr>
                   `))
 			})
+			it('should remove the website on click of the delete button', async ({ interfaceBuilder, themeUtils }) => {
+				const nrRemovals = 42
+				const website = 'youtube'
+				const deleter = vi.fn()
+				const removeWebsiteSpy = vi.spyOn(themeUtils, 'removeWebsite')
+
+				const deleteButton = interfaceBuilder
+					.createTableRow(nrRemovals, deleter, website)
+					.querySelector('.button-inner-container')
+
+				deleteButton.click()
+
+				await testUtils.verifyAsync(() => {
+					expect(deleter).toHaveBeenCalled()
+					expect(removeWebsiteSpy).toHaveBeenCalledWith(website)
+				})
+			})
 		})
 	})
 })
