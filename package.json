@@ -10,7 +10,7 @@
     "author": "lc-nyovchev",
     "license": "MIT",
     "devDependencies": {
-        "vite": "^8.0.3",
+        "vite": "^8.0.5",
         "vitest": "^4.1.2",
         "vanjs-core": "^1.6.0",
         "vanjs-ext": "^0.6.3",
