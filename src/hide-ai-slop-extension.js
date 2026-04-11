@@ -43,7 +43,6 @@ class WebsiteSelectorMap {
 			}
 		}
 	}
-
 	getNThParent(element, n) {
 		if (!element) {
 			return null
@@ -64,12 +63,10 @@ class SlopHider {
 		this.slopSelectorFunc = this.websiteSelectorMap.map[website]
 		this.slopHiderUtils = new SlopHiderUtils()
 	}
-
 	removeSlop(slop) {
 		console.log('Deleting slop')
 		slop.remove()
 	}
-
 	prepareSlopRemovalMessage() {
 		return {
 			type: 'hideAiSlop',
@@ -77,11 +74,9 @@ class SlopHider {
 			website: this.website
 		}
 	}
-
 	hasContent(slop) {
 		return slop && slop.innerHTML && slop.innerHTML.trim() !== ''
 	}
-
 	async isEnabled() {
 		const store = await chrome.storage.sync.get()
 		if (typeof store['HIDE_AI_SLOP_BLOCKING_ENABLED'] === 'undefined') {
@@ -90,7 +85,6 @@ class SlopHider {
 			return store['HIDE_AI_SLOP_BLOCKING_ENABLED']
 		}
 	}
-
 	async startObserving() {
 		if (await this.isEnabled()) {
 			const slop = await this.slopHiderUtils.waitForElement(this.slopSelectorFunc)

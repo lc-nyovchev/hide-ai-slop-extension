@@ -53,12 +53,49 @@ export class ThemeUtils {
 		delete points[STORAGE_CONSTANTS.SLOP_BLOCKING_THEME.KEY]
 		delete points[STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.KEY]
 		delete points[STORAGE_CONSTANTS.SLOP_BLOCKING_DEDICATION.KEY]
-		return points
+		return Object.fromEntries(
+			Object
+				.entries(points)
+				.map(([key, value]) => {
+					const points = parseInt(value, 10)
+					if (points) {
+						return [key, points]
+					} else {
+						return [key, 0]
+					}
+				}))
+	}
+	async getRemovalsForWebsite(website) {
+		const points = await this.getRemovals()
+		const removalsForWebsite = points[website]
+		return removalsForWebsite ? removalsForWebsite : 0
+	}
+	async setSlopRemovalsForWebsite(website, removals) {
+		console.debug(`Slop removals for ${website} set to ${removals}`)
+		return await this.engineUtils.storageSet({[website]: removals})
 	}
 	async removeWebsite(website) {
 		return this.engineUtils.storageRemove(website)
 	}
+	isEnabled(store) {
+		if (typeof store[STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.KEY] === 'undefined') {
+			return STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.DEFAULT_VALUE
+		} else {
+			return store[STORAGE_CONSTANTS.SLOP_BLOCKING_ENABLED.KEY]
+		}
+	}
+	getIconPath(enabled) {
+		return enabled ? this.engineUtils.runtime().getURL(UI_CONSTANTS.DEFAULT_ICON_PATH) : this.engineUtils.runtime().getURL(UI_CONSTANTS.DISABLED_ICON_PATH)
+	}
+	async setIconAndTitle() {
+		const store = await this.engineUtils.storageGet()
+		const enabled = this.isEnabled(store)
+		this.engineUtils.action().setIcon({path: this.getIconPath(enabled)})
+		this.engineUtils.action().setTitle({title: enabled ? UI_CONSTANTS.DEFAULT_TITLE : UI_CONSTANTS.DISABLED_TITLE})
+	}
 }
+
+
 
 export class InterfaceBuilder {
 	constructor(
@@ -94,7 +131,6 @@ export class InterfaceBuilder {
 			}
 		}
 	}
-
 	createContainer() {
 		van.derive(() => {
 			document.body.className = this.state.colorPalette
@@ -107,7 +143,6 @@ export class InterfaceBuilder {
 			this.createTable(this.state.removals)
 		)
 	}
-
 	createTable(removals) {
 		return table(
 			this.createTableHeader(),

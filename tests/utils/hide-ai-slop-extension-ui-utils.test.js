@@ -150,6 +150,14 @@ describe('ui-utils', () => {
 				expect(removals).toStrictEqual({ 'google': 420, 'youtube': 1337 })
 				expect(engineUtils.storageGet).toHaveBeenCalled()
 			})
+			it('should handle str keys as well', async ({ themeUtils, engineUtils }) => {
+				engineUtils.storageGet.mockResolvedValueOnce({ 'google': '420' })
+
+				const removals = await themeUtils.getRemovals()
+
+				expect(removals).toStrictEqual({ 'google': 420 })
+				expect(engineUtils.storageGet).toHaveBeenCalled()
+			})
 		})
 		describe('removeWebsite', () => {
 			it('should call the proper internals', async ({ themeUtils, engineUtils }) => {
