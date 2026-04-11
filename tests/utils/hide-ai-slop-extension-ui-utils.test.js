@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment jsdom
+ */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { InterfaceBuilder, ThemeUtils } from '../../src/utils/hide-ai-slop-extension-ui-utils.js'
 import { MESSAGE_CONSTANTS, STORAGE_CONSTANTS, UI_CONSTANTS } from '../../src/utils/hide-ai-slop-extension-utils.js'
@@ -150,6 +153,14 @@ describe('ui-utils', () => {
 				expect(removals).toStrictEqual({ 'google': 420, 'youtube': 1337 })
 				expect(engineUtils.storageGet).toHaveBeenCalled()
 			})
+			it('should handle str keys as well', async ({ themeUtils, engineUtils }) => {
+				engineUtils.storageGet.mockResolvedValueOnce({ 'google': '420' })
+
+				const removals = await themeUtils.getRemovals()
+
+				expect(removals).toStrictEqual({ 'google': 420 })
+				expect(engineUtils.storageGet).toHaveBeenCalled()
+			})
 		})
 		describe('removeWebsite', () => {
 			it('should call the proper internals', async ({ themeUtils, engineUtils }) => {
@@ -161,15 +172,27 @@ describe('ui-utils', () => {
 			})
 		})
 	})
-	/**
-	 * @vitest-environment jsdom
-	 */
 	describe('InterfaceBuilder', () => {
-		describe('createTableRow', () => {
-			beforeEach(async (context) => {
-				const { themeUtils } = context
-				context.interfaceBuilder = new InterfaceBuilder(true, 'dark', 'With ❤️ to Hania', {}, 5000, themeUtils)
+		beforeEach(async (context) => {
+			const { themeUtils } = context
+			context.interfaceBuilder = new InterfaceBuilder(true, 'dark', 'With ❤️ to Hania', {}, 5000, themeUtils)
+		})
+		describe('createTableHeader', () => {
+			it('should generate the proper header', async ({ interfaceBuilder }) => {
+				const header = interfaceBuilder.createTableHeader()
+
+				expect(header.outerHTML).toMatchInlineSnapshot(testUtils.sanitizeHtml(`
+					<thead>
+						<tr>
+							<th>${UI_CONSTANTS.TABLE_HEADERS.WEBSITE}</th>
+							<th>${UI_CONSTANTS.TABLE_HEADERS.SLOPS_REMOVED}</th>
+							<th>${UI_CONSTANTS.TABLE_HEADERS.DELETE}</th>
+						</tr>
+					</thead>
+				`))
 			})
+		})
+		describe('createTableRow', () => {
 			it('should create a table row with the correct data and handlers', async ({ interfaceBuilder }) => {
 				const nrRemovals = 42
 				const website = 'youtube'
@@ -207,6 +230,17 @@ describe('ui-utils', () => {
 					expect(deleter).toHaveBeenCalled()
 					expect(removeWebsiteSpy).toHaveBeenCalledWith(website)
 				})
+			})
+		})
+		describe('createHeader', () => {
+			it('should create the proper header', async ({ interfaceBuilder }) => {
+				const header = interfaceBuilder.createHeader()
+
+				expect(header.outerHTML).toMatchInlineSnapshot(testUtils.sanitizeHtml(`
+					<h2>
+						${UI_CONSTANTS.DEFAULT_TITLE}
+					</h2>
+				`))
 			})
 		})
 	})

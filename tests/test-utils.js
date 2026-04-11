@@ -29,7 +29,7 @@ export default {
 		return mockEngineUtils
 	},
 	sanitizeHtml(html) {
-		return `"${html.replace(/>\s+</g, '><').trim()}"`
+		return `"${html.replace(/\s+</g, '<').replace(/>\s+/g, '>').trim()}"`
 	},
 	async verifyAsync(func) {
 		await new Promise(resolve => setTimeout(resolve, 0))
