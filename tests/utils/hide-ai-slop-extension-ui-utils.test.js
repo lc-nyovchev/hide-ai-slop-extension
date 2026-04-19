@@ -173,11 +173,26 @@ describe('ui-utils', () => {
 	 * @vitest-environment jsdom
 	 */
 	describe('InterfaceBuilder', () => {
-		describe('createTableRow', () => {
-			beforeEach(async (context) => {
-				const { themeUtils } = context
-				context.interfaceBuilder = new InterfaceBuilder(true, 'dark', 'With ❤️ to Hania', {}, 5000, themeUtils)
+		beforeEach(async (context) => {
+			const { themeUtils } = context
+			context.interfaceBuilder = new InterfaceBuilder(true, 'dark', 'With ❤️ to Hania', {}, 5000, themeUtils)
+		})
+		describe('createTableHeader', () => {
+			it('should generate the proper header', async ({ interfaceBuilder }) => {
+				const header = interfaceBuilder.createTableHeader()
+
+				expect(header.outerHTML).toMatchInlineSnapshot(testUtils.sanitizeHtml(`
+					<thead>
+						<tr>
+							<th>${UI_CONSTANTS.TABLE_HEADERS.WEBSITE}</th>
+							<th>${UI_CONSTANTS.TABLE_HEADERS.SLOPS_REMOVED}</th>
+							<th>${UI_CONSTANTS.TABLE_HEADERS.DELETE}</th>
+						</tr>
+					</thead>
+				`))
 			})
+		})
+		describe('createTableRow', () => {
 			it('should create a table row with the correct data and handlers', async ({ interfaceBuilder }) => {
 				const nrRemovals = 42
 				const website = 'youtube'
