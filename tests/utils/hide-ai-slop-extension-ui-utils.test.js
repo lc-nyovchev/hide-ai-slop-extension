@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment jsdom
+ */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { InterfaceBuilder, ThemeUtils } from '../../src/utils/hide-ai-slop-extension-ui-utils.js'
 import { MESSAGE_CONSTANTS, STORAGE_CONSTANTS, UI_CONSTANTS } from '../../src/utils/hide-ai-slop-extension-utils.js'
@@ -169,9 +172,6 @@ describe('ui-utils', () => {
 			})
 		})
 	})
-	/**
-	 * @vitest-environment jsdom
-	 */
 	describe('InterfaceBuilder', () => {
 		beforeEach(async (context) => {
 			const { themeUtils } = context
@@ -230,6 +230,17 @@ describe('ui-utils', () => {
 					expect(deleter).toHaveBeenCalled()
 					expect(removeWebsiteSpy).toHaveBeenCalledWith(website)
 				})
+			})
+		})
+		describe('createHeader', () => {
+			it('should create the proper header', async ({ interfaceBuilder }) => {
+				const header = interfaceBuilder.createHeader()
+
+				expect(header.outerHTML).toMatchInlineSnapshot(testUtils.sanitizeHtml(`
+					<h2>
+						${UI_CONSTANTS.DEFAULT_TITLE}
+					</h2>
+				`))
 			})
 		})
 	})
