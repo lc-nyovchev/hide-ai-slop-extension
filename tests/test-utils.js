@@ -28,6 +28,13 @@ export default {
 		})
 		return mockEngineUtils
 	},
+	mockVanJSRender(element) {
+		Object.defineProperty(element, 'isConnected', { get: () => true, configurable: true })
+		for (const child of element.childNodes) {
+			this.mockVanJSRender(child)
+		}
+		return element
+	},
 	sanitizeHtml(html) {
 		return `"${html.replace(/\s+</g, '<').replace(/>\s+/g, '>').trim()}"`
 	},
