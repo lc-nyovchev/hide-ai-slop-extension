@@ -179,7 +179,7 @@ describe('ui-utils', () => {
 		})
 		describe('createTableHeader', () => {
 			it('should generate the proper header', async ({ interfaceBuilder }) => {
-				const header = interfaceBuilder.createTableHeader()
+				const header = testUtils.mockVanJSRender(interfaceBuilder.createTableHeader())
 
 				expect(header.outerHTML).toMatchInlineSnapshot(testUtils.sanitizeHtml(`
 					<thead>
@@ -198,7 +198,7 @@ describe('ui-utils', () => {
 				const website = 'youtube'
 				const deleter = vi.fn()
 
-				const row = interfaceBuilder.createTableRow(nrRemovals, deleter, website)
+				const row = testUtils.mockVanJSRender(interfaceBuilder.createTableRow(nrRemovals, deleter, website))
 
 				expect(row.outerHTML).toMatchInlineSnapshot(testUtils.sanitizeHtml(`
                     <tr>
@@ -220,8 +220,10 @@ describe('ui-utils', () => {
 				const deleter = vi.fn()
 				const removeWebsiteSpy = vi.spyOn(themeUtils, 'removeWebsite')
 
-				const deleteButton = interfaceBuilder
-					.createTableRow(nrRemovals, deleter, website)
+				const deleteButton = testUtils
+					.mockVanJSRender(
+						interfaceBuilder.createTableRow(nrRemovals, deleter, website)
+					)
 					.querySelector('.button-inner-container')
 
 				deleteButton.click()
@@ -234,13 +236,76 @@ describe('ui-utils', () => {
 		})
 		describe('createHeader', () => {
 			it('should create the proper header', async ({ interfaceBuilder }) => {
-				const header = interfaceBuilder.createHeader()
+				const header = testUtils.mockVanJSRender(interfaceBuilder.createHeader())
 
 				expect(header.outerHTML).toMatchInlineSnapshot(testUtils.sanitizeHtml(`
 					<h2>
 						${UI_CONSTANTS.DEFAULT_TITLE}
 					</h2>
 				`))
+			})
+		})
+		describe('createToggleEnabledButton', () => {
+			beforeEach(async ({ themeUtils }) => {
+				vi.spyOn(themeUtils, 'setSlopBlockingEnabled')
+			})
+			it('should create the proper button when its enabled', async ({ interfaceBuilder }) => {
+				const toggleEnabledButton = testUtils.mockVanJSRender(
+					interfaceBuilder.createToggleEnabledButton(vanX.reactive({ enabled: true }))
+				)
+
+				expect(toggleEnabledButton.outerHTML).toMatchInlineSnapshot(testUtils.sanitizeHtml(`
+					<div class="button-container toggle-enabled-button">
+						<div class="button-inner-container" title="${UI_CONSTANTS.CONTROLS.TOGGLE_ENABLED_BUTTON.TITLE_ENABLED}">
+							<i class="fa-solid fa-toggle-on fa-lg"></i>
+							<div>
+								${UI_CONSTANTS.CONTROLS.TOGGLE_ENABLED_BUTTON.ON_TEXT}
+							</div>
+						</div>
+					</div>
+				`))
+			})
+			it('should create the proper button when its disabled', async ({ interfaceBuilder }) => {
+				const toggleEnabledButton = testUtils.mockVanJSRender(
+					interfaceBuilder.createToggleEnabledButton(vanX.reactive({ enabled: false }))
+				)
+
+				expect(toggleEnabledButton.outerHTML).toMatchInlineSnapshot(testUtils.sanitizeHtml(`
+					<div class="button-container toggle-enabled-button">
+						<div class="button-inner-container" title="${UI_CONSTANTS.CONTROLS.TOGGLE_ENABLED_BUTTON.TITLE_DISABLED}">
+							<i class="fa-solid fa-toggle-off fa-lg"></i>
+							<div>
+								${UI_CONSTANTS.CONTROLS.TOGGLE_ENABLED_BUTTON.OFF_TEXT}
+							</div>
+						</div>
+					</div>
+				`))
+			})
+			it('should create handle click and change state', async ({ interfaceBuilder, themeUtils }) => {
+				const state = vanX.reactive({
+					enabled: true
+				})
+
+				const toggleEnabledButton = testUtils.mockVanJSRender(interfaceBuilder.createToggleEnabledButton(state))
+
+				toggleEnabledButton
+					.querySelector('.button-inner-container')
+					.click()
+
+				await testUtils.verifyAsync(async () => {
+					expect(state.enabled).toBe(false)
+					expect(themeUtils.setSlopBlockingEnabled).toHaveBeenCalledWith(false)
+					expect(toggleEnabledButton.outerHTML).toMatchInlineSnapshot(testUtils.sanitizeHtml(`
+						<div class="button-container toggle-enabled-button">
+							<div class="button-inner-container" title="${UI_CONSTANTS.CONTROLS.TOGGLE_ENABLED_BUTTON.TITLE_DISABLED}">
+								<i class="fa-solid fa-toggle-off fa-lg"></i>
+								<div>
+									${UI_CONSTANTS.CONTROLS.TOGGLE_ENABLED_BUTTON.OFF_TEXT}
+								</div>
+							</div>
+						</div>
+					`))
+				})
 			})
 		})
 	})
