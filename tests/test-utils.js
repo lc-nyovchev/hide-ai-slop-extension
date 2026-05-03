@@ -1,4 +1,4 @@
-import { expect, vi } from "vitest"
+import { vi } from "vitest"
 import { EngineUtils } from "../src/utils/hide-ai-slop-extension-utils.js"
 
 export default {
