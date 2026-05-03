@@ -308,6 +308,61 @@ describe('ui-utils', () => {
 				})
 			})
 		})
+		describe('createColorPaletteSwitcher', () => {
+			beforeEach(async ({ themeUtils }) => {
+				vi.spyOn(themeUtils, 'setTheme')
+			})
+			it('should have the dark mode theme when state has it set', async ({ interfaceBuilder }) => {
+				const state = vanX.reactive({
+					colorPalette: UI_CONSTANTS.COLOR_PALETTES.DARK
+				})
+				const colorPaletteSwitcher = testUtils.mockVanJSRender(interfaceBuilder.createColorPaletteSwitcher(state))
+
+				expect(colorPaletteSwitcher.outerHTML).toMatchInlineSnapshot(testUtils.sanitizeHtml(`
+					<div class="button-container color-switcher">
+						<div class="button-inner-container" title="${UI_CONSTANTS.CONTROLS.CHANGE_THEME_TITLE}">
+							<i class="fa-regular fa-moon fa-lg"></i>
+						</div>
+					</div>
+				`))
+			})
+			it('should have the light mode theme when state has it as set', async ({ interfaceBuilder }) => {
+				const state = vanX.reactive({
+					colorPalette: UI_CONSTANTS.COLOR_PALETTES.LIGHT
+				})
+				const colorPaletteSwitcher = testUtils.mockVanJSRender(interfaceBuilder.createColorPaletteSwitcher(state))
+
+				expect(colorPaletteSwitcher.outerHTML).toMatchInlineSnapshot(testUtils.sanitizeHtml(`
+					<div class="button-container color-switcher">
+						<div class="button-inner-container" title="${UI_CONSTANTS.CONTROLS.CHANGE_THEME_TITLE}">
+							<i class="fa-regular fa-sun fa-lg"></i>
+						</div>
+					</div>
+				`))
+			})
+			it('should toggle between dark and light properly', async ({ themeUtils, interfaceBuilder }) => {
+				const state = vanX.reactive({
+					colorPalette: UI_CONSTANTS.COLOR_PALETTES.DARK
+				})
+				const colorPaletteSwitcher = testUtils.mockVanJSRender(interfaceBuilder.createColorPaletteSwitcher(state))
+
+				colorPaletteSwitcher
+					.querySelector('.button-inner-container')
+					.click()
+
+				await testUtils.verifyAsync(async () => {
+					expect(state.colorPalette).toBe(UI_CONSTANTS.COLOR_PALETTES.LIGHT)
+					expect(themeUtils.setTheme).toHaveBeenCalledWith(UI_CONSTANTS.COLOR_PALETTES.LIGHT)
+					expect(colorPaletteSwitcher.outerHTML).toMatchInlineSnapshot(testUtils.sanitizeHtml(`
+						<div class="button-container color-switcher">
+							<div class="button-inner-container" title="${UI_CONSTANTS.CONTROLS.CHANGE_THEME_TITLE}">
+								<i class="fa-regular fa-sun fa-lg"></i>
+							</div>
+						</div>
+					`))
+				})
+			})
+		})
 	})
 })
 
