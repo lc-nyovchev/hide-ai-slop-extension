@@ -1,5 +1,4 @@
-import { EngineUtils, MESSAGE_CONSTANTS } from './utils/hide-ai-slop-extension-utils.js'
-import { ThemeUtils } from './utils/hide-ai-slop-extension-ui-utils.js'
+import { EngineUtils, MESSAGE_CONSTANTS, ThemeUtils } from './utils/hide-ai-slop-extension-utils.js'
 
 Promise.resolve(new EngineUtils(chrome)).then((engineUtils) => {
 	const themeUtils = new ThemeUtils(engineUtils)
