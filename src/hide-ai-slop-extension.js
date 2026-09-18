@@ -29,7 +29,14 @@ class WebsiteSelectorMap {
 				}
 			},
 			google: () => {
-				return document.querySelector('div[data-mcpr]')
+				const oldStyle = document.querySelector('div[data-mcpr]')
+				if (oldStyle) {
+					return oldStyle
+				}
+				const newStyle = this.getNThParent(document.querySelector('div[data-aim="1"]'), 5)
+				if (newStyle) {
+					return newStyle
+				}
 			},
 			gmail: () => {
 				const geminiLink = this.getNThParent(document.querySelector('a[href^="https://support.google.com/mail?p=gemini-summary-card"]'), 3)
