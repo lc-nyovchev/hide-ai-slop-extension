@@ -1,6 +1,6 @@
 {
     "name": "hide-ai-slop-extension",
-    "version": "1.15",
+    "version": "1.16",
     "directories": {
         "test": "tests"
     },
