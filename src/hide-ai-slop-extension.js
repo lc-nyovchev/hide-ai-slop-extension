@@ -33,7 +33,7 @@ class WebsiteSelectorMap {
 				if (oldStyle) {
 					return oldStyle
 				}
-				const newStyle = this.getNThParent(document.querySelector('div[data-aquarium]'), 5)
+				const newStyle = this.getNThParent(document.querySelector('div[data-aquarium], div[data-aim], div[data-isaee]'), 5)
 				if (newStyle) {
 					return newStyle
 				}
