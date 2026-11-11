@@ -8,13 +8,13 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   name: Checkout
-                uses: actions/checkout@v6
+                uses: actions/checkout@v7.0.1
             -   name: Prepare Build Artifact
                 run: |
                     mkdir build
                     cp -r src/ manifest.json build/
             -   name: Upload Build Artifact
-                uses: actions/upload-artifact@v7
+                uses: actions/upload-artifact@v7.0.2
                 with:
                     name: hide-ai-slop-extension-${{ github.ref_name }}-build
                     path: build/
